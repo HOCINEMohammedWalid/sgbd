@@ -2,18 +2,22 @@ package com.sgeb.sgbd.model;
 
 import com.sgeb.sgbd.model.enums.TypeDocument;
 import com.sgeb.sgbd.model.enums.Categorie;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class Document implements Comparable<Document> {
+public abstract class Document implements Comparable<Document>, Serializable {
     protected int idDocument;
     protected String titre;
-    protected List<String> auteurs;
+    protected List<String> auteurs = new ArrayList<>();
     protected int anneePublication;
     protected String editeur;
     protected String resume;
     protected Categorie categorie;
-    protected List<String> motsCles;
+    protected List<String> motsCles = new ArrayList<>();
     protected String langue;
     protected TypeDocument typeDocument;
 
@@ -54,7 +58,7 @@ public abstract class Document implements Comparable<Document> {
     }
 
     public List<String> getAuteurs() {
-        return auteurs;
+        return Collections.unmodifiableList(auteurs);
     }
 
     public int getAnneePublication() {
@@ -74,7 +78,7 @@ public abstract class Document implements Comparable<Document> {
     }
 
     public List<String> getMotsCles() {
-        return motsCles;
+        return Collections.unmodifiableList(motsCles);
     }
 
     public String getLangue() {
@@ -136,7 +140,7 @@ public abstract class Document implements Comparable<Document> {
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null || getClass() != obj.getClass())
+        if (!(obj instanceof Document))
             return false;
         Document document = (Document) obj;
         return idDocument == document.idDocument;

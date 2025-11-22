@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.control.Label?>
+<BorderPane xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.sgeb.sgbd.controller.MainController">
 
-<StackPane xmlns="http://javafx.com/javafx/8"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="com.sgeb.sgbd.controllers.MainController">
+    <top>
+        <Label text="Gestion de la Bibliothèque" style="-fx-font-size: 20px; -fx-padding: 10;"/>
+    </top>
 
-    <Label text="Bonjour JavaFX — votre interface fonctionne !" />
+    <center>
+        <TableView fx:id="tableAdherents">
+            <columns>
+                <TableColumn text="ID" fx:id="colId"/>
+                <TableColumn text="Nom" fx:id="colNom"/>
+                <TableColumn text="Prénom" fx:id="colPrenom"/>
+                <TableColumn text="Email" fx:id="colEmail"/>
+            </columns>
+        </TableView>
+    </center>
 
-</StackPane>
+    <bottom>
+        <Button text="Ajouter adhérent" onAction="#ajouterAdherent"/>
+    </bottom>
+</BorderPane>

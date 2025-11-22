@@ -76,13 +76,4 @@ public class Magazine extends Document {
         return super.toString() + " - Magazine n°" + numero;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true; // même référence
-        if (obj == null || getClass() != obj.getClass())
-            return false; // type différent
-        Magazine other = (Magazine) obj;
-        return this.idDocument == other.idDocument; // comparaison par ID unique
-    }
 }
