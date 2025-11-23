@@ -1,7 +1,9 @@
 package com.sgeb.sgbd.model;
 
+import com.sgeb.sgbd.model.enums.Categorie;
 import com.sgeb.sgbd.model.enums.TypeDocument;
 import java.time.LocalDate;
+import java.util.List;
 
 public class These extends Document {
     private String auteurPrincipal;
@@ -11,9 +13,12 @@ public class These extends Document {
     private LocalDate dateSoutenance;
     private String typeAcces;
 
-    public These(int idDocument, String titre, String auteurPrincipal, String directeurRecherche,
+    public These(int idDocument, String titre, List<String> auteurs, int anneePublication,
+            String editeur, String resume, Categorie categorie, List<String> motsCles,
+            String langue, String auteurPrincipal, String directeurRecherche,
             String universite, String discipline, LocalDate dateSoutenance, String typeAcces) {
-        super(idDocument, titre);
+        super(idDocument, titre, auteurs, anneePublication, editeur, resume, categorie, motsCles, langue,
+                TypeDocument.THESE);
         this.auteurPrincipal = auteurPrincipal;
         this.directeurRecherche = directeurRecherche;
         this.universite = universite;

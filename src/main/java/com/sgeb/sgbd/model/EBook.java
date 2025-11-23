@@ -1,5 +1,8 @@
 package com.sgeb.sgbd.model;
 
+import java.util.List;
+
+import com.sgeb.sgbd.model.enums.Categorie;
 import com.sgeb.sgbd.model.enums.TypeDocument;
 
 public class EBook extends Document {
@@ -7,12 +10,25 @@ public class EBook extends Document {
     private String format;
     private boolean drm;
 
-    public EBook(int idDocument, String titre, String urlAcces, String format, boolean drm) {
-        super(idDocument, titre);
+    public EBook(int idDocument, String titre, List<String> auteurs,
+            int anneePublication,
+            String editeur,
+            String resume,
+            Categorie categorie,
+            List<String> motsCles,
+            String langue, String urlAcces, String format, boolean drm) {
+        super(idDocument, titre, auteurs,
+                anneePublication,
+                editeur,
+                resume,
+                categorie,
+                motsCles,
+                langue,
+                TypeDocument.EBOOK);
         this.urlAcces = urlAcces;
         this.format = format;
         this.drm = drm;
-        this.typeDocument = TypeDocument.EBOOK;
+
     }
 
     // Getters et setters

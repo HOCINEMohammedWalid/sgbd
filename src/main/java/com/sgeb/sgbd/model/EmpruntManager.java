@@ -1,10 +1,13 @@
 package com.sgeb.sgbd.model;
 
-import com.sgeb.sgbd.model.Adherent;
-import com.sgeb.sgbd.model.Document;
-import com.sgeb.sgbd.model.Emprunt;
+import com.sgeb.sgbd.dao.EmpruntDAO;
+
+import com.sgeb.sgbd.dao.DocumentDAO;
+import com.sgeb.sgbd.dao.AdherentDAO;
+import com.sgeb.sgbd.model.enums.StatutAdherent;
 import com.sgeb.sgbd.model.exception.*;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -12,80 +15,157 @@ import java.util.stream.Collectors;
 
 public class EmpruntManager {
 
-    private final Map<Integer, Emprunt> empruntsEnCours = new HashMap<>();
+    private final EmpruntDAO empruntDAO;
+    private final DocumentDAO documentDAO;
+    private final AdherentDAO adherentDAO;
     private final int limiteEmprunts = 5;
-    private final int dureeEmpruntJours = 21; // 3 semaines
+    private final int dureeEmpruntJours = 21;
     private final double penaliteParJour = 0.50;
 
+    public EmpruntManager(EmpruntDAO empruntDAO, DocumentDAO documentDAO, AdherentDAO adherentDAO) {
+        this.empruntDAO = empruntDAO;
+        this.documentDAO = documentDAO;
+        this.adherentDAO = adherentDAO;
+    }
+
     // -----------------------------
-    // Enregistrer un emprunt
+    // Emprunter un document
     // -----------------------------
-    public void emprunter(Document doc, Adherent adherent) throws EmpruntException {
+    public void emprunter(Document doc, Adherent adherent) throws EmpruntException, SQLException {
         if (doc == null || adherent == null)
             throw new IllegalArgumentException("Document ou adhérent invalide.");
 
         if (!adherent.peutEmprunter())
             throw new StatutAdherentException();
 
-        if (nombreEmpruntsEnCours(adherent) >= limiteEmprunts)
+        long nbEmprunts = empruntDAO.findByAdherent(adherent.getIdAdherent(), documentDAO, adherentDAO).size();
+        if (nbEmprunts >= limiteEmprunts)
             throw new LimiteEmpruntsAtteinteException();
 
         // Vérifier si le document est disponible
-        boolean dejaEmprunte = empruntsEnCours.values().stream()
+        boolean dejaEmprunte = empruntDAO.findAll(documentDAO, adherentDAO).stream()
                 .anyMatch(e -> e.getDocument().equals(doc));
         if (dejaEmprunte)
             throw new DocumentIndisponibleException();
 
-        LocalDate dateEmprunt = LocalDate.now();
+        LocalDate dateEmprunt = LocalDate.of(2025, 9, 1);
         LocalDate dateRetourPrevue = dateEmprunt.plusDays(dureeEmpruntJours);
 
-        Emprunt e = new Emprunt(doc, adherent, dateEmprunt, dateRetourPrevue);
-        empruntsEnCours.put(e.getIdEmprunt(), e);
+        Emprunt e = new Emprunt(0, doc, adherent, dateEmprunt, dateRetourPrevue);
+        System.out.println("11111111111");
+        empruntDAO.insert(e);
+        System.out.println("222222");
         adherent.ajouterEmprunt(e);
+        System.out.println("3333333333");
     }
 
     // -----------------------------
-    // Enregistrer un retour
+    // Retour d’un emprunt
     // -----------------------------
-    public void retour(Emprunt e) throws EmpruntException {
-        if (e == null || !empruntsEnCours.containsKey(e.getIdEmprunt()))
+    public void retour(Emprunt e) throws EmpruntException, SQLException {
+        if (e == null)
             throw new EmpruntInexistantException();
 
         LocalDate dateRetour = LocalDate.now();
         e.setDateRetourReelle(dateRetour);
 
-        // Vérifier retard
         long retard = ChronoUnit.DAYS.between(e.getDateRetourPrevue(), dateRetour);
         e.setPenalite(retard > 0 ? retard * penaliteParJour : 0);
 
-        empruntsEnCours.remove(e.getIdEmprunt());
+        empruntDAO.update(e);
     }
 
     // -----------------------------
     // Emprunts en cours
     // -----------------------------
-    public List<Emprunt> listerEmpruntsEnCours() {
-        return empruntsEnCours.values().stream()
+    public List<Emprunt> listerEmpruntsEnCours() throws SQLException {
+        return empruntDAO.findAll(documentDAO, adherentDAO).stream()
+                .filter(e -> e.getDateRetourReelle() == null)
                 .sorted(Comparator.comparing(Emprunt::getDateEmprunt))
                 .collect(Collectors.toList());
     }
 
     // -----------------------------
-    // Alertes sur les retards
+    // Emprunts en retard
     // -----------------------------
-    public List<Emprunt> empruntsEnRetard() {
+    public List<Emprunt> empruntsEnRetard() throws SQLException {
         LocalDate today = LocalDate.now();
-        return empruntsEnCours.values().stream()
+        return empruntDAO.findAll(documentDAO, adherentDAO).stream()
+                .filter(e -> e.getDateRetourReelle() == null)
                 .filter(e -> e.getDateRetourPrevue().isBefore(today))
                 .collect(Collectors.toList());
     }
 
     // -----------------------------
-    // Compter les emprunts en cours d’un adhérent
+    // Compter les emprunts d’un adhérent
     // -----------------------------
-    public long nombreEmpruntsEnCours(Adherent adherent) {
-        return empruntsEnCours.values().stream()
-                .filter(e -> e.getAdherent().equals(adherent))
+    public long nombreEmpruntsEnCours(Adherent adherent) throws SQLException {
+        return empruntDAO.findByAdherent(adherent.getIdAdherent(), documentDAO, adherentDAO).stream()
+                .filter(e -> e.getDateRetourReelle() == null)
                 .count();
+    }
+
+    public void payerPenalite(Emprunt e) throws SQLException, EmpruntException {
+        if (e == null)
+            throw new EmpruntInexistantException();
+
+        if (e.getPenalite() <= 0)
+            throw new EmpruntException("Aucune pénalité à payer.");
+
+        if (e.isPayee())
+            throw new EmpruntException("La pénalité est déjà payée.");
+
+        e.marquerPenalitePayee();
+        empruntDAO.update(e);
+
+    }
+
+    public static void main(String[] args) {
+        try {
+            // DAO
+
+            DocumentDAO documentDAO = new DocumentDAO();
+            EmpruntDAO empruntDAO = new EmpruntDAO();
+
+            AdherentDAO adherentDAO = new AdherentDAO(empruntDAO, documentDAO);
+            // Managers
+            EmpruntManager empruntManager = new EmpruntManager(empruntDAO, documentDAO, adherentDAO);
+
+            // Créer un adhérent pour test
+            Adherent adh = new Adherent(1, "Dupont", "Jean", "jean.dupont@example.com",
+                    "12 rue de Paris", "0123456789", LocalDate.of(2023, 1, 15),
+                    StatutAdherent.ACTIF, new ArrayList<>());
+
+            adherentDAO.save(adh);
+            System.out.println(adh.getIdAdherent());
+
+            // Récupérer un document existant (id 1 par exemple)
+            Document doc = documentDAO.findById(8).orElseThrow(() -> new RuntimeException("Document introuvable"));
+
+            // Emprunter le document
+            System.out.println(doc);
+            System.out.println(adh);
+            empruntManager.emprunter(doc, adh);
+            System.out.println("Document emprunté avec succès !");
+
+            // Lister les emprunts en cours
+            List<Emprunt> enCours = empruntManager.listerEmpruntsEnCours();
+            System.out.println(enCours);
+            System.out.println("Emprunts en cours : " + enCours.size());
+
+            // Retourner le document
+            Emprunt e = enCours.get(0);
+            empruntManager.retour(e);
+            System.out.println("Document retourné, pénalité : " + e.getPenalite());
+
+            // Vérifier les emprunts en retard
+            List<Emprunt> enRetard = empruntManager.empruntsEnRetard();
+            System.out.println("Emprunts en retard : " + enRetard.size());
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        } catch (Exception ex) {
+            System.err.println("Erreur : " + ex.getMessage());
+        }
     }
 }

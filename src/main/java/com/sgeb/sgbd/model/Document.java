@@ -21,11 +21,12 @@ public abstract class Document implements Comparable<Document>, Serializable {
     protected String langue;
     protected TypeDocument typeDocument;
 
-    protected Document(int idDocument, String titre) {
-        this.idDocument = idDocument;
-        this.titre = titre;
-    }
-
+    /*
+     * protected Document(int idDocument, String titre) {
+     * this.idDocument = idDocument;
+     * this.titre = titre;
+     * }
+     */
     protected Document(int idDocument,
             String titre,
             List<String> auteurs,

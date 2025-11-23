@@ -1,6 +1,9 @@
 
 package com.sgeb.sgbd.model;
 
+import java.util.List;
+
+import com.sgeb.sgbd.model.enums.Categorie;
 import com.sgeb.sgbd.model.enums.TypeDocument;
 
 public class DVD extends Document {
@@ -8,12 +11,26 @@ public class DVD extends Document {
     private int duree; // en minutes
     private String classification;
 
-    public DVD(int idDocument, String titre, String realisateur, int duree, String classification) {
-        super(idDocument, titre);
+    public DVD(int idDocument, String titre, List<String> auteurs,
+            int anneePublication,
+            String editeur,
+            String resume,
+            Categorie categorie,
+            List<String> motsCles,
+            String langue, String realisateur, int duree, String classification) {
+
+        super(idDocument, titre, auteurs,
+                anneePublication,
+                editeur,
+                resume,
+                categorie,
+                motsCles,
+                langue, TypeDocument.DVD);
+
         this.realisateur = realisateur;
         this.duree = duree;
         this.classification = classification;
-        this.typeDocument = TypeDocument.DVD;
+
     }
 
     // Getters et setters

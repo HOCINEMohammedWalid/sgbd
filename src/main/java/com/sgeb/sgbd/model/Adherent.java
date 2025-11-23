@@ -14,13 +14,15 @@ public class Adherent {
     private String telephone;
     private LocalDate dateInscription;
     private StatutAdherent statut;
-    private List<Penalite> penalites;
+
     private List<Emprunt> historiqueEmprunts;
+
+    public Adherent() {
+    }
 
     // Constructeur complet
     public Adherent(int idAdherent, String nom, String prenom, String email, String adresse, String telephone,
-            LocalDate dateInscription, StatutAdherent statut,
-            List<Penalite> penalites, List<Emprunt> historiqueEmprunts) {
+            LocalDate dateInscription, StatutAdherent statut, List<Emprunt> historiqueEmprunts) {
         this.idAdherent = idAdherent;
         this.nom = nom;
         this.prenom = prenom;
@@ -29,7 +31,7 @@ public class Adherent {
         this.telephone = telephone;
         this.dateInscription = dateInscription != null ? dateInscription : LocalDate.now();
         this.statut = statut != null ? statut : StatutAdherent.ACTIF;
-        this.penalites = penalites != null ? penalites : new ArrayList<>();
+
         this.historiqueEmprunts = historiqueEmprunts != null ? historiqueEmprunts : new ArrayList<>();
     }
 
@@ -37,16 +39,11 @@ public class Adherent {
     public boolean peutEmprunter() {
         if (statut != StatutAdherent.ACTIF)
             return false;
-        for (Penalite p : penalites) {
-            if (!p.isPayee())
+        for (Emprunt p : historiqueEmprunts) {
+            if (p.getPenalite() > 0 && !p.isPayee())
                 return false;
         }
         return true;
-    }
-
-    // Ajouter une pénalité
-    public void ajouterPenalite(Penalite p) {
-        penalites.add(p);
     }
 
     // Ajouter un emprunt à l'historique
@@ -68,8 +65,8 @@ public class Adherent {
 
     // Vérifie si l'adhérent a des pénalités non payées
     public boolean aPenalites() {
-        for (Penalite p : penalites) {
-            if (!p.isPayee())
+        for (Emprunt p : historiqueEmprunts) {
+            if (p.getPenalite() > 0 && !p.isPayee())
                 return true;
         }
         return false;
@@ -144,12 +141,13 @@ public class Adherent {
         this.statut = statut;
     }
 
-    public List<Penalite> getPenalites() {
+    public List<Emprunt> getPenalites_E() {
+        List<Emprunt> penalites = new ArrayList<>();
+        for (Emprunt p : historiqueEmprunts) {
+            if (p.getPenalite() > 0)
+                penalites.add(p);
+        }
         return penalites;
-    }
-
-    public void setPenalites(List<Penalite> penalites) {
-        this.penalites = penalites;
     }
 
     public List<Emprunt> getHistoriqueEmprunts() {

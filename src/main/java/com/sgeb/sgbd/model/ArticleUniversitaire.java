@@ -1,5 +1,8 @@
 package com.sgeb.sgbd.model;
 
+import java.util.List;
+
+import com.sgeb.sgbd.model.enums.Categorie;
 import com.sgeb.sgbd.model.enums.TypeDocument;
 
 public class ArticleUniversitaire extends Document {
@@ -9,9 +12,22 @@ public class ArticleUniversitaire extends Document {
     private String pages;
     private String DOI;
 
-    public ArticleUniversitaire(int idDocument, String titre, String titreRevue, int volume, int numero, String pages,
+    public ArticleUniversitaire(int idDocument, String titre, List<String> auteurs,
+            int anneePublication,
+            String editeur,
+            String resume,
+            Categorie categorie,
+            List<String> motsCles,
+            String langue, String titreRevue, int volume, int numero, String pages,
             String DOI) {
-        super(idDocument, titre);
+        super(idDocument, titre, auteurs,
+                anneePublication,
+                editeur,
+                resume,
+                categorie,
+                motsCles,
+                langue,
+                TypeDocument.ARTICLE);
         this.titreRevue = titreRevue;
         this.volume = volume;
         this.numero = numero;

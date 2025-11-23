@@ -4,15 +4,15 @@ import java.time.LocalDate;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Emprunt {
-    private static final AtomicInteger compteur = new AtomicInteger(0);
 
-    private final int idEmprunt;
+    private int idEmprunt;
     private final Document document;
     private final Adherent adherent;
     private final LocalDate dateEmprunt;
     private final LocalDate dateRetourPrevue;
     private LocalDate dateRetourReelle;
     private double penalite;
+    private boolean payee;
 
     public Emprunt(int idEmprunt, Document document, Adherent adherent, LocalDate dateEmprunt,
             LocalDate dateRetourPrevue) {
@@ -25,7 +25,7 @@ public class Emprunt {
     }
 
     public Emprunt(int idEmprunt, Document document, Adherent adherent, LocalDate dateEmprunt,
-            LocalDate dateRetourPrevue, LocalDate dateRetourReelle, double penalite) {
+            LocalDate dateRetourPrevue, LocalDate dateRetourReelle, double penalite, boolean payee) {
 
         this.idEmprunt = idEmprunt;
         this.document = document;
@@ -34,13 +34,14 @@ public class Emprunt {
         this.dateRetourPrevue = dateRetourPrevue;
         this.dateRetourReelle = dateRetourReelle;
         this.penalite = penalite;
+        this.payee = payee;
     }
 
     public int getIdEmprunt() {
         return idEmprunt;
     }
 
-    public Document getExemplaire() {
+    public Document getDocument() {
         return document;
     }
 
@@ -64,12 +65,24 @@ public class Emprunt {
         return penalite;
     }
 
+    public boolean isPayee() {
+        return payee;
+    }
+
     public void setDateRetourReelle(LocalDate dateRetourReelle) {
         this.dateRetourReelle = dateRetourReelle;
     }
 
     public void setPenalite(double penalite) {
         this.penalite = penalite;
+    }
+
+    public void setIdEmprunt(int idEmprunt) {
+        this.idEmprunt = idEmprunt;
+    }
+
+    public void marquerPenalitePayee() {
+        this.payee = true;
     }
 
     @Override
