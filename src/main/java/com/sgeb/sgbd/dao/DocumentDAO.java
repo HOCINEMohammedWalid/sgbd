@@ -30,6 +30,11 @@ public class DocumentDAO {
                 ps.setString(9, doc.getMotsCles() != null ? String.join(",", doc.getMotsCles()) : null);
                 ps.setString(10, doc.getLangue());
                 ps.executeUpdate();
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        doc.setIdDocument(rs.getInt(1)); // mettre à jour l'objet avec l'ID généré
+                    }
+                }
             }
         }
 
@@ -407,6 +412,111 @@ public class DocumentDAO {
         }
     }
 
+    // -------------------- UPDATE --------------------
+    public void update(Document doc) throws SQLException {
+        // 1. Mise à jour de la table principale "document"
+        try (Connection conn = Database.getConnection()) {
+            String sql = "UPDATE document SET titre=?, type=?, auteurs=?, annee_publication=?, " +
+                    "editeur=?, resume=?, categorie=?, mots_cles=?, langue=? WHERE id=?";
+
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, doc.getTitre());
+                ps.setString(2, doc.getTypeDocument().name());
+                ps.setString(3, doc.getAuteurs() != null ? String.join(",", doc.getAuteurs()) : null);
+                ps.setObject(4, doc.getAnneePublication() > 0 ? doc.getAnneePublication() : null);
+                ps.setString(5, doc.getEditeur());
+                ps.setString(6, doc.getResume());
+                ps.setString(7, doc.getCategorie() != null ? doc.getCategorie().name() : null);
+                ps.setString(8, doc.getMotsCles() != null ? String.join(",", doc.getMotsCles()) : null);
+                ps.setString(9, doc.getLangue());
+                ps.setInt(10, doc.getIdDocument());
+                ps.executeUpdate();
+            }
+        }
+
+        // 2. Mise à jour de la table spécialisée
+        updateSpecific(doc);
+    }
+
+    private void updateSpecific(Document doc) throws SQLException {
+        try (Connection conn = Database.getConnection()) {
+
+            if (doc instanceof Livre) {
+                Livre l = (Livre) doc;
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE livre SET isbn=?, nb_pages=?, collection=? WHERE id=?")) {
+                    ps.setString(1, l.getISBN());
+                    ps.setInt(2, l.getNbPages());
+                    ps.setString(3, l.getCollection());
+                    ps.setInt(4, l.getIdDocument());
+                    ps.executeUpdate();
+                }
+
+            } else if (doc instanceof Magazine) {
+                Magazine m = (Magazine) doc;
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE magazine SET numero=?, periodicite=?, date_publication=? WHERE id=?")) {
+                    ps.setInt(1, m.getNumero());
+                    ps.setString(2, m.getPeriodicite());
+                    ps.setString(3, m.getDatePublication() != null ? m.getDatePublication().toString() : null);
+                    ps.setInt(4, m.getIdDocument());
+                    ps.executeUpdate();
+                }
+
+            } else if (doc instanceof DVD) {
+                DVD d = (DVD) doc;
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE dvd SET realisateur=?, duree=?, classification=? WHERE id=?")) {
+                    ps.setString(1, d.getRealisateur());
+                    ps.setInt(2, d.getDuree());
+                    ps.setString(3, d.getClassification());
+                    ps.setInt(4, d.getIdDocument());
+                    ps.executeUpdate();
+                }
+
+            } else if (doc instanceof EBook) {
+                EBook e = (EBook) doc;
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE ebook SET url_acces=?, format=?, drm=? WHERE id=?")) {
+                    ps.setString(1, e.getUrlAcces());
+                    ps.setString(2, e.getFormat());
+                    ps.setInt(3, e.hasDrm() ? 1 : 0);
+                    ps.setInt(4, e.getIdDocument());
+                    ps.executeUpdate();
+                }
+
+            } else if (doc instanceof ArticleUniversitaire) {
+                ArticleUniversitaire a = (ArticleUniversitaire) doc;
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE article_universitaire SET titre_revue=?, volume=?, numero=?, pages=?, doi=? WHERE id=?")) {
+                    ps.setString(1, a.getTitreRevue());
+                    ps.setInt(2, a.getVolume());
+                    ps.setInt(3, a.getNumero());
+                    ps.setString(4, a.getPages());
+                    ps.setString(5, a.getDOI());
+                    ps.setInt(6, a.getIdDocument());
+                    ps.executeUpdate();
+                }
+
+            } else if (doc instanceof These) {
+                These t = (These) doc;
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "UPDATE these SET auteur_principal=?, directeur_recherche=?, universite=?, " +
+                                "discipline=?, date_soutenance=?, type_acces=? WHERE id=?")) {
+
+                    ps.setString(1, t.getAuteurPrincipal());
+                    ps.setString(2, t.getDirecteurRecherche());
+                    ps.setString(3, t.getUniversite());
+                    ps.setString(4, t.getDiscipline());
+                    ps.setString(5, t.getDateSoutenance() != null ? t.getDateSoutenance().toString() : null);
+                    ps.setString(6, t.getTypeAcces());
+                    ps.setInt(7, t.getIdDocument());
+                    ps.executeUpdate();
+                }
+            }
+        }
+    }
+
     // -------------------- LIST ALL --------------------
     public List<Document> findAll() throws SQLException {
         List<Document> docs = new ArrayList<>();
@@ -419,4 +529,45 @@ public class DocumentDAO {
         }
         return docs;
     }
+
+    public List<Document> findAllParType(TypeDocument type) throws SQLException {
+        List<Document> docs = new ArrayList<>();
+
+        String sql = "SELECT id FROM document WHERE type = ?";
+        try (Connection conn = Database.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, type.name());
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+
+                // Récupération selon le type
+                switch (type) {
+                    case LIVRE:
+                        docs.add(readLivre(id));
+                        break;
+                    case MAGAZINE:
+                        docs.add(readMagazine(id));
+                        break;
+                    case DVD:
+                        docs.add(readDVD(id));
+                        break;
+                    case EBOOK:
+                        docs.add(readEBook(id));
+                        break;
+                    case ARTICLE:
+                        docs.add(readArticle(id));
+                        break;
+                    case THESE:
+                        docs.add(readThese(id));
+                        break;
+                }
+            }
+        }
+
+        return docs;
+    }
+
 }

@@ -5,11 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * Classe Database : gère la connexion et l'initialisation/mise à jour des
- * tables SQLite
- * avec support de l'héritage et des contraintes ON DELETE CASCADE.
- */
 public class Database {
 
     private static final String URL = "jdbc:sqlite:sgbd.db";
@@ -19,7 +14,7 @@ public class Database {
     }
 
     /**
-     * Initialise toutes les tables si elles n'existent pas déjà.
+     * Initialise toutes les tables.
      */
     public static void initialize() {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
@@ -51,7 +46,7 @@ public class Database {
                             "langue TEXT" +
                             ");");
 
-            // Tables spécialisées avec ON DELETE CASCADE
+            // Tables spécialisées
             stmt.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS livre (" +
                             "id INTEGER PRIMARY KEY," +
@@ -111,7 +106,6 @@ public class Database {
                             "FOREIGN KEY(id) REFERENCES document(id) ON DELETE CASCADE" +
                             ");");
 
-            // ------------------ Table Emprunt ------------------
             stmt.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS emprunt (" +
                             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -125,7 +119,6 @@ public class Database {
                             "FOREIGN KEY(adherent_id) REFERENCES adherent(id) ON DELETE CASCADE" +
                             ");");
 
-            // ------------------ Table Penalite ------------------
             stmt.executeUpdate(
                     "CREATE TABLE IF NOT EXISTS penalite (" +
                             "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -143,42 +136,34 @@ public class Database {
     }
 
     /**
-     * Met à jour le schéma pour appliquer ON DELETE CASCADE et autres modifications
-     * sur les tables existantes.
+     * Supprime toutes les tables puis réinitialise.
      */
-    public static void updateSchema() {
+    public static void update() {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("PRAGMA foreign_keys = OFF;");
 
-            // Supprimer les tables spécialisées si elles existent
-            stmt.executeUpdate("DROP TABLE IF EXISTS livre;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS magazine;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS dvd;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS ebook;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS article_universitaire;");
-            stmt.executeUpdate("DROP TABLE IF EXISTS these;");
-
-            // Supprimer les tables dépendantes
             stmt.executeUpdate("DROP TABLE IF EXISTS emprunt;");
             stmt.executeUpdate("DROP TABLE IF EXISTS penalite;");
-
-            // Supprimer la table de base
+            stmt.executeUpdate("DROP TABLE IF EXISTS these;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS article_universitaire;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS ebook;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS dvd;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS magazine;");
+            stmt.executeUpdate("DROP TABLE IF EXISTS livre;");
             stmt.executeUpdate("DROP TABLE IF EXISTS document;");
             stmt.executeUpdate("DROP TABLE IF EXISTS adherent;");
 
-            // Réinitialiser les tables avec ON DELETE CASCADE
-            initialize(); // ta méthode initialize() doit être modifiée pour inclure ON DELETE CASCADE sur
-                          // toutes les clés étrangères
+            System.out.println("Tables supprimées avec succès.");
 
-            stmt.executeUpdate("PRAGMA foreign_keys = ON;");
-            System.out.println("Schéma mis à jour avec ON DELETE CASCADE !");
+            // On recrée les tables
+            initialize();
+
         } catch (SQLException e) {
-            System.err.println("Erreur lors de la mise à jour du schéma : " + e.getMessage());
+            System.err.println("Erreur lors de la mise à jour des tables : " + e.getMessage());
         }
     }
 
     public static void main(String[] args) {
-        initialize();
-        updateSchema();
+        // Pour tester la mise à jour
+        update();
     }
 }

@@ -14,8 +14,9 @@ public class Emprunt {
     private LocalDate dateRetourReelle;
     private double penalite;
 
-    public Emprunt(Document document, Adherent adherent, LocalDate dateEmprunt, LocalDate dateRetourPrevue) {
-        this.idEmprunt = compteur.incrementAndGet();
+    public Emprunt(int idEmprunt, Document document, Adherent adherent, LocalDate dateEmprunt,
+            LocalDate dateRetourPrevue) {
+        this.idEmprunt = idEmprunt;
         this.document = document;
         this.adherent = adherent;
         this.dateEmprunt = dateEmprunt;
@@ -23,11 +24,23 @@ public class Emprunt {
         this.penalite = 0;
     }
 
+    public Emprunt(int idEmprunt, Document document, Adherent adherent, LocalDate dateEmprunt,
+            LocalDate dateRetourPrevue, LocalDate dateRetourReelle, double penalite) {
+
+        this.idEmprunt = idEmprunt;
+        this.document = document;
+        this.adherent = adherent;
+        this.dateEmprunt = dateEmprunt;
+        this.dateRetourPrevue = dateRetourPrevue;
+        this.dateRetourReelle = dateRetourReelle;
+        this.penalite = penalite;
+    }
+
     public int getIdEmprunt() {
         return idEmprunt;
     }
 
-    public Document getDocument() {
+    public Document getExemplaire() {
         return document;
     }
 
