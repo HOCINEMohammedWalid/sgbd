@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="885.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChercheursController">
+   <children>
+      <AnchorPane layoutX="12.0" layoutY="8.0" prefHeight="539.0" prefWidth="860.0" stylesheets="@PagePrincipale.css">
+         <children>
+            <AnchorPane prefHeight="337.0" prefWidth="863.0" stylesheets="@PagePrincipale.css">
+               <styleClass>
+                  <String fx:value="white-bg" />
+                  <String fx:value="shadow" />
+               </styleClass>
+               <children>
+                  <TableView fx:id="TableChercheurs" layoutX="8.0" layoutY="54.0" prefHeight="485.0" prefWidth="848.0">
+                    <columns>
+                      <TableColumn fx:id="IDCol" prefWidth="46.00000190734863" text="ID" />
+                      <TableColumn fx:id="NomCol" prefWidth="128.66667938232422" text="Nom" />
+                        <TableColumn fx:id="PrenomCol" prefWidth="139.99998474121094" text="Prénom" />
+                        <TableColumn fx:id="AgeCol" prefWidth="57.99993896484375" text="Âge" />
+                        <TableColumn fx:id="VilleCol" prefWidth="84.6666259765625" text="Ville" />
+                        <TableColumn fx:id="DepCol" prefWidth="106.66665649414062" text="Département" />
+                        <TableColumn fx:id="BureauCol" prefWidth="95.33331298828125" text="N°Bureau" />
+                        <TableColumn fx:id="ColRegion" prefWidth="110.66668701171875" text="Région" />
+                        <TableColumn fx:id="DetailsCol" prefWidth="79.33331298828125" text="Détails" />
+                    </columns>
+                  </TableView>
+                  <TextField fx:id="id_search" layoutX="8.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="47.0" promptText=" Search ID" />
+                  <TextField fx:id="nom_search" layoutX="55.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="131.0" promptText=" Search Nom" />
+                  <TextField fx:id="prenom_search" layoutX="186.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="138.0" promptText=" Search Prénom" />
+                  <TextField fx:id="age_search" layoutX="324.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="58.0" promptText=" Search Age" />
+                  <TextField fx:id="ville_search" layoutX="382.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="85.0" promptText=" Search Ville" />
+                  <TextField fx:id="dep_search" layoutX="467.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="106.0" promptText=" Search Dép" />
+                  <TextField fx:id="num_search" layoutX="573.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="97.0" promptText=" Search N°B" />
+                  <TextField fx:id="region_search" layoutX="671.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="113.0" promptText=" Search Région" />
+                  <Button layoutX="793.0" layoutY="14.0" mnemonicParsing="false" onAction="#ajouter" prefHeight="25.0" prefWidth="56.0" style="-fx-background-color: #fb8500;" text="Ajouter" textFill="WHITE" />
+               </children>
+            </AnchorPane>
+         </children>
+         <styleClass>
+            <String fx:value="shadow" />
+            <String fx:value="white-bg" />
+         </styleClass>
+      </AnchorPane>
+   </children>
+</AnchorPane>
