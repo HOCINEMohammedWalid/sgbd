@@ -12,7 +12,7 @@ import com.sgeb.sgbd.model.AdherentManager;
 import com.sgeb.sgbd.model.DocumentManager;
 import com.sgeb.sgbd.model.EmpruntManager;
 
-public class PagePrincipaleController implements ManagerLoader {
+public class PagePrincipaleNonAdminController implements ManagerLoader {
 
     // --- Managers reçus depuis le Main ou AppLoader ---
     private DocumentManager documentManager;
@@ -25,11 +25,16 @@ public class PagePrincipaleController implements ManagerLoader {
         this.empruntManager = empM;
     }
 
-    // Zone centrale
     @FXML
     private StackPane ContentArea;
 
-    // ---------- MÉTHODE GÉNÉRIQUE D'AFFICHAGE ----------
+    // Interface pour initialiser les controllers dynamiquement
+    private interface ControllerInitializer {
+        void init(Object controller);
+    }
+
+    // ---------- MÉTHODE GÉNÉRIQUE D'AFFICHAGE (Copie de la version Admin)
+    // ----------
     private void loadPage(String fxmlPath, ControllerInitializer initializer) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -53,51 +58,24 @@ public class PagePrincipaleController implements ManagerLoader {
         }
     }
 
-    // Interface pour initialiser les controllers dynamiquement
-    private interface ControllerInitializer {
-        void init(Object controller);
-    }
-
-    // =========================================================
-    // NAVIGATION BOUTONS
-    // =========================================================
-
     @FXML
-
     void Documents(ActionEvent event) {
-        loadPage("/com/sgeb/sgbd/view/TableauDocumentAdmin.fxml", controller -> {
-            DocumentsController c = (DocumentsController) controller;
-            c.setManagers(documentManager, adherentManager, empruntManager);
+        // CHARGEMENT DE LA VUE NON-ADMIN
+        loadPage("/com/sgeb/sgbd/view/TableauDocumentNonAdmin.fxml", controller -> {
+            // CORRECTION: Conversion vers le contrôleur Non-Admin
+            DocumentsControllerNonAdmin c = (DocumentsControllerNonAdmin) controller;
+            c.setManagers(documentManager); // Il est plus simple d'utiliser le setManagers qui prend un seul argument
+                                            // si les autres managers ne sont pas nécessaires.
         });
     }
 
     @FXML
-    void adherents(ActionEvent event) {
-        /*
-         * loadPage("/view/Adherents.fxml", controller -> {
-         * AdherentsController c = (AdherentsController) controller;
-         * c.setManagers(adherentManager, empruntManager);
-         * });
-         */
-    }
-
-    @FXML
-    void emprunts(ActionEvent event) {
-        /*
-         * loadPage("/view/Emprunts.fxml", controller -> {
-         * EmpruntsController c = (EmpruntsController) controller;
-         * c.setManagers(empruntManager, adherentManager, documentManager);
-         * });
-         */
+    void mes_emprints(ActionEvent event) {
+        // Logique de chargement de la vue des emprunts Non-Admin
     }
 
     @FXML
     void profil(ActionEvent event) {
-        /*
-         * loadPage("/view/Profil.fxml", controller -> {
-         * ProfilController c = (ProfilController) controller;
-         * c.setManagers(documentManager, adherentManager, empruntManager);
-         * });
-         */
+        // Logique de chargement du profil Non-Admin
     }
 }

@@ -1,5 +1,6 @@
 package com.sgeb.sgbd;
 
+import com.sgeb.sgbd.controllers.ManagerLoader;
 import com.sgeb.sgbd.controllers.PagePrincipaleController;
 import com.sgeb.sgbd.dao.AdherentDAO;
 import com.sgeb.sgbd.dao.DocumentDAO;
@@ -17,26 +18,42 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        // --- Création des DAO ---
+        // --- 1. SIMULATION DU CHOIX DE L'UTILISATEUR ---
+        // **C'EST ICI QUE VOUS METTREZ VOTRE VRAIE LOGIQUE DE CONNEXION**
+        boolean isAdmin = false; // Mettez 'true' pour tester l'Admin, 'false' pour le Non-Admin.
+
+        // --- Création des DAO et Managers (inchangé) ---
         DocumentDAO documentDAO = new DocumentDAO();
         AdherentDAO adherentDAO = new AdherentDAO(new EmpruntDAO(), documentDAO);
         EmpruntDAO empruntDAO = new EmpruntDAO();
 
-        // --- Création des managers ---
         DocumentManager documentManager = new DocumentManager(documentDAO);
         AdherentManager adherentManager = new AdherentManager(empruntDAO, documentDAO);
         EmpruntManager empruntManager = new EmpruntManager(empruntDAO, documentDAO, adherentDAO);
 
-        // --- Charger la page principale ---
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/sgeb/sgbd/view/PagePrincipaleAdmin.fxml"));
-        Parent root = loader.load();
+        // --- 2. Charger la page principale basée sur le rôle ---
+        String fxmlPath;
+        String title;
 
-        PagePrincipaleController controller = loader.getController();
+        if (isAdmin) {
+            fxmlPath = "/com/sgeb/sgbd/view/PagePrincipaleAdmin.fxml";
+            title = "Gestion bibliothèque - ADMINISTRATEUR";
+        } else {
+            // Assurez-vous que ce fichier FXML existe pour la vue Non-Admin
+            fxmlPath = "/com/sgeb/sgbd/view/PagePrincipaleNonAdmin.fxml";
+            title = "Gestion bibliothèque - ADHÉRENT";
+        }
+
+        // --- 2. Charger la page principale basée sur le rôle ---
+        // ... (choix de fxmlPath basé sur isAdmin)
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load(); // **CORRECTION ICI :** Utiliser l'interface ManagerLoader
+        ManagerLoader controller = (ManagerLoader) loader.getController();
         controller.setManagers(documentManager, adherentManager, empruntManager);
 
         Scene scene = new Scene(root, 1175, 600);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Gestion bibliothèque - SGEB");
+        primaryStage.setTitle(title);
         primaryStage.show();
     }
 
