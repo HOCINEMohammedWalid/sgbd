@@ -49,9 +49,13 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.sgeb.sgbd.MainApp</mainClass>
-                </configuration>
-            </plugin>
+                <mainClass>com.sgeb.sgbd.MainApp</mainClass>
+                <modulePaths>
+                    <modulePath>${project.basedir}/lib/javafx-sdk-21.0.5/lib</modulePath>
+                </modulePaths>
+    </configuration>
+</plugin>
+
         </plugins>
     </build>
 </project>

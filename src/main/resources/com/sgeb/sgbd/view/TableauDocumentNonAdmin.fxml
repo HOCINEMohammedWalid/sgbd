@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="885.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.TableauDocumentNonAdminController">
+   <children>
+      <AnchorPane layoutX="12.0" layoutY="8.0" prefHeight="539.0" prefWidth="860.0" stylesheets="@PagePrincipale.css">
+         <children>
+            <AnchorPane prefHeight="337.0" prefWidth="863.0" stylesheets="@PagePrincipale.css">
+               <styleClass>
+                  <String fx:value="white-bg" />
+                  <String fx:value="shadow" />
+               </styleClass>
+               <children>
+                  <TableView fx:id="TableChercheurs" layoutX="8.0" layoutY="54.0" prefHeight="485.0" prefWidth="848.0">
+                    <columns>
+                      <TableColumn fx:id="IDCol" prefWidth="35.0" text="ID" />
+                      <TableColumn fx:id="NomCol" prefWidth="170.0" text="Titre" />
+                        <TableColumn fx:id="PrenomCol" prefWidth="60.0" text="Type" />
+                        <TableColumn fx:id="AgeCol" prefWidth="140.0" text="Auteurs" />
+                        <TableColumn fx:id="VilleCol" prefWidth="60.0" text="Année de puplication" />
+                        <TableColumn fx:id="DepCol" prefWidth="90.0" text="Editeur" />
+                        <TableColumn fx:id="BureauCol" text="categorie" />
+                        <TableColumn fx:id="ColRegion" text="langue" />
+                        <TableColumn minWidth="0.0" prefWidth="70.0" text="Disponibilité" />
+                        <TableColumn fx:id="DetailsCol" prefWidth="60.0" text="Détails" />
+                    </columns>
+                  </TableView>
+                  <TextField fx:id="id_search" layoutX="8.0" layoutY="14.0" onKeyTyped="#search" prefHeight="26.0" prefWidth="40.0" promptText=" Search ID" />
+                  <TextField fx:id="nom_search" layoutX="48.0" layoutY="14.0" onKeyTyped="#search" prefHeight="26.0" prefWidth="164.0" promptText="Search Titre" />
+                  <TextField fx:id="prenom_search" layoutX="210.0" layoutY="14.0" onKeyTyped="#search" prefHeight="26.0" prefWidth="63.0" promptText="Search Type" />
+                  <TextField fx:id="age_search" layoutX="273.0" layoutY="14.0" onKeyTyped="#search" prefHeight="26.0" prefWidth="140.0" promptText="Search Auteurs" />
+                  <TextField fx:id="ville_search" layoutX="412.0" layoutY="14.0" onKeyTyped="#search" prefHeight="26.0" prefWidth="60.0" promptText="Search Année de Puplication" />
+                  <TextField fx:id="dep_search" layoutX="472.0" layoutY="14.0" onKeyTyped="#search" prefHeight="26.0" prefWidth="90.0" promptText="Search Editeurs" />
+                  <TextField fx:id="num_search" layoutX="562.0" layoutY="14.0" onKeyTyped="#search" prefHeight="26.0" prefWidth="80.0" promptText="Search Categorie" />
+                  <TextField fx:id="region_search" layoutX="642.0" layoutY="14.0" onKeyTyped="#search" prefHeight="25.0" prefWidth="80.0" promptText="Search Langue" />
+                  <CheckBox layoutX="745.0" layoutY="17.0" mnemonicParsing="false" prefHeight="19.0" prefWidth="17.0" />
+               </children>
+            </AnchorPane>
+         </children>
+         <styleClass>
+            <String fx:value="shadow" />
+            <String fx:value="white-bg" />
+         </styleClass>
+      </AnchorPane>
+   </children>
+</AnchorPane>
