@@ -48,15 +48,15 @@ public class EmpruntManager {
         if (dejaEmprunte)
             throw new DocumentIndisponibleException();
 
-        LocalDate dateEmprunt = LocalDate.of(2025, 9, 1);
+        LocalDate dateEmprunt = LocalDate.now();
         LocalDate dateRetourPrevue = dateEmprunt.plusDays(dureeEmpruntJours);
 
         Emprunt e = new Emprunt(0, doc, adherent, dateEmprunt, dateRetourPrevue);
-        System.out.println("11111111111");
+
         empruntDAO.insert(e);
-        System.out.println("222222");
+
         adherent.ajouterEmprunt(e);
-        System.out.println("3333333333");
+
     }
 
     // -----------------------------
@@ -85,6 +85,13 @@ public class EmpruntManager {
                 .collect(Collectors.toList());
     }
 
+    public List<Emprunt> listerEmprunts() throws SQLException {
+        System.out.println("hhhhhk");
+        return empruntDAO.findAll(documentDAO, adherentDAO).stream()
+                .sorted(Comparator.comparing(Emprunt::getDateEmprunt))
+                .collect(Collectors.toList());
+    }
+
     // -----------------------------
     // Emprunts en retard
     // -----------------------------
@@ -103,6 +110,12 @@ public class EmpruntManager {
         return empruntDAO.findByAdherent(adherent.getIdAdherent(), documentDAO, adherentDAO).stream()
                 .filter(e -> e.getDateRetourReelle() == null)
                 .count();
+    }
+
+    public List<Emprunt> listerEmpruntsParAdherent(int idAdherent) throws SQLException {
+        return empruntDAO.findByAdherent(idAdherent, documentDAO, adherentDAO).stream()
+                .sorted(Comparator.comparing(Emprunt::getDateEmprunt).reversed()) // Tri par date décroissante
+                .collect(Collectors.toList());
     }
 
     public void payerPenalite(Emprunt e) throws SQLException, EmpruntException {

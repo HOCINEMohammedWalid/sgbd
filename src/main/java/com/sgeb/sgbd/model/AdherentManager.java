@@ -80,6 +80,14 @@ public class AdherentManager {
         dao.update(a); // mise à jour dans la base
     }
 
+    public void deleteAdherent(int id)
+            throws SQLException {
+
+        dao.delete(id);
+
+        // mise à jour dans la base
+    }
+
     // -----------------------------
     // Historique
     // -----------------------------

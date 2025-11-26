@@ -41,7 +41,6 @@
                               <Button layoutX="14.0" layoutY="148.0" mnemonicParsing="false" onAction="#Documents" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@PagePrincipale.css" text="Documents" />
                               <Button layoutX="14.0" layoutY="183.0" mnemonicParsing="false" onAction="#adherents" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@PagePrincipale.css" text="Adherents" />
                               <Button layoutX="14.0" layoutY="218.0" mnemonicParsing="false" onAction="#emprunts" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@PagePrincipale.css" text="Emprunts" />
-                              <Button layoutX="14.0" layoutY="288.0" mnemonicParsing="false" onAction="#profil" prefHeight="35.0" prefWidth="180.0" styleClass="nav-btn" stylesheets="@PagePrincipale.css" text="Profil" />
                            </children>
                         </AnchorPane>
                      </children>

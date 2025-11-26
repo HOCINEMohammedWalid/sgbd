@@ -160,6 +160,19 @@ public class Adherent {
 
     @Override
     public String toString() {
-        return String.format("Adh[%d] %s %s - Statut: %s", idAdherent, nom, prenom, statut);
+
+        return String.format(
+                "Adhérent [ID: %d]  \n" + "%s %s\n" +
+                        "  Email: %s \n" + " Tél: %s\n" +
+                        "  Statut: %s\n" +
+                        "  Inscrit le: %s ",
+                idAdherent,
+                nom,
+                prenom,
+                email,
+                telephone,
+                statut,
+
+                dateInscription);
     }
 }

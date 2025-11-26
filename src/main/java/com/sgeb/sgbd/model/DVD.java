@@ -70,8 +70,39 @@ public class DVD extends Document {
         System.out.println("Résumé du DVD : " + titre);
     }
 
+    // Dans com.sgeb.sgbd.model.DVD
+
     @Override
     public String toString() {
-        return getDescriptionComplete();
+
+        // Convertir la durée en minutes en format Hh MMmin (par exemple, 95min -> 1h
+        // 35min)
+        String dureeFormatee;
+        if (duree > 0) {
+            long heures = duree / 60;
+            long minutes = duree % 60;
+            if (heures > 0) {
+                dureeFormatee = String.format("%dh %dmin", heures, minutes);
+            } else {
+                dureeFormatee = String.format("%dmin", minutes);
+            }
+        } else {
+            dureeFormatee = "Durée inconnue";
+        }
+
+        // Formatage complet des informations du DVD
+        return String.format(
+                "DVD [ID: %d] : %s\n" +
+                        "  Réalisateur: %s | Année: %d\n" +
+                        "  Durée: %s | Classification: %s\n" +
+                        "  Catégorie: %s | Langue: %s",
+                idDocument,
+                titre,
+                (realisateur != null && !realisateur.isEmpty() ? realisateur : "N/A"),
+                anneePublication,
+                dureeFormatee,
+                (classification != null && !classification.isEmpty() ? classification : "N/A"),
+                (categorie != null ? categorie.name() : "N/A"),
+                (langue != null && !langue.isEmpty() ? langue : "N/A"));
     }
 }

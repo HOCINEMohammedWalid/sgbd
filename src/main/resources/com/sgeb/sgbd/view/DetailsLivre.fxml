@@ -14,7 +14,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" stylesheets="@PagePrincipale.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.DetailsLivreController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" stylesheets="@PagePrincipale.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sgeb.sgbd.controllers.DetailsLivreController">
    <styleClass>
       <String fx:value="white-bg" />
       <String fx:value="shadow" />
@@ -87,7 +87,7 @@
       </HBox>
       <HBox layoutX="10.0" layoutY="149.0" prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text fx:id="annee_p" strokeType="OUTSIDE" strokeWidth="0.0" text="Année de publication" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Année de publication" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -104,7 +104,7 @@
       </HBox>
       <HBox layoutX="10.0" layoutY="335.0" prefHeight="0.0" prefWidth="366.0">
          <children>
-            <Text fx:id="catg" strokeType="OUTSIDE" strokeWidth="0.0" text="Catégorie :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Catégorie :" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -117,7 +117,7 @@
       </HBox>
       <HBox layoutX="10.0" layoutY="111.0" prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text fx:id="mot_cles" strokeType="OUTSIDE" strokeWidth="0.0" text="Mots clés :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Mots clés :" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -151,7 +151,7 @@
       </HBox>
       <HBox prefHeight="80.0" prefWidth="370.0">
          <children>
-            <Text fx:id="resume" strokeType="OUTSIDE" strokeWidth="0.0" text="Résumé :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Résumé :" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -219,8 +219,8 @@
       </HBox>
       <Pane prefHeight="58.0" prefWidth="400.0">
          <children>
-            <Button layoutX="90.0" layoutY="12.0" mnemonicParsing="false" onAction="#update" prefHeight="26.0" prefWidth="95.0" text="Update" />
-            <Button layoutX="230.0" layoutY="12.0" mnemonicParsing="false" onAction="#anuller" prefHeight="26.0" prefWidth="95.0" text="Anuller" />
+            <Button fx:id="Update" layoutX="90.0" layoutY="12.0" mnemonicParsing="false" onAction="#update" prefHeight="26.0" prefWidth="95.0" text="Update" />
+            <Button fx:id="Anuller" layoutX="230.0" layoutY="12.0" mnemonicParsing="false" onAction="#anuller" prefHeight="26.0" prefWidth="95.0" text="Anuller" />
          </children>
       </Pane>
    </children>

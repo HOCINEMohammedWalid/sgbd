@@ -73,31 +73,22 @@ public class PagePrincipaleController implements ManagerLoader {
 
     @FXML
     void adherents(ActionEvent event) {
-        /*
-         * loadPage("/view/Adherents.fxml", controller -> {
-         * AdherentsController c = (AdherentsController) controller;
-         * c.setManagers(adherentManager, empruntManager);
-         * });
-         */
+
+        loadPage("/com/sgeb/sgbd/view/TableauAdherent.fxml", controller -> {
+            AdherentsController c = (AdherentsController) controller;
+            c.setManager(adherentManager);
+        });
+
     }
 
     @FXML
     void emprunts(ActionEvent event) {
-        /*
-         * loadPage("/view/Emprunts.fxml", controller -> {
-         * EmpruntsController c = (EmpruntsController) controller;
-         * c.setManagers(empruntManager, adherentManager, documentManager);
-         * });
-         */
+
+        loadPage("/com/sgeb/sgbd/view/TableauEmpunts.fxml", controller -> {
+            EmpruntsController c = (EmpruntsController) controller;
+            c.setManager(empruntManager);
+        });
+
     }
 
-    @FXML
-    void profil(ActionEvent event) {
-        /*
-         * loadPage("/view/Profil.fxml", controller -> {
-         * ProfilController c = (ProfilController) controller;
-         * c.setManagers(documentManager, adherentManager, empruntManager);
-         * });
-         */
-    }
 }

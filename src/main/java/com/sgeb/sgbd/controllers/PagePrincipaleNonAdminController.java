@@ -8,6 +8,7 @@ import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 
+import com.sgeb.sgbd.model.Adherent;
 import com.sgeb.sgbd.model.AdherentManager;
 import com.sgeb.sgbd.model.DocumentManager;
 import com.sgeb.sgbd.model.EmpruntManager;
@@ -18,6 +19,11 @@ public class PagePrincipaleNonAdminController implements ManagerLoader {
     private DocumentManager documentManager;
     private AdherentManager adherentManager;
     private EmpruntManager empruntManager;
+    private Adherent adherent;
+
+    public void setAdherent(Adherent adherent) {
+        this.adherent = adherent;
+    }
 
     public void setManagers(DocumentManager docM, AdherentManager adhM, EmpruntManager empM) {
         this.documentManager = docM;
@@ -64,14 +70,22 @@ public class PagePrincipaleNonAdminController implements ManagerLoader {
         loadPage("/com/sgeb/sgbd/view/TableauDocumentNonAdmin.fxml", controller -> {
             // CORRECTION: Conversion vers le contrôleur Non-Admin
             DocumentsControllerNonAdmin c = (DocumentsControllerNonAdmin) controller;
-            c.setManagers(documentManager); // Il est plus simple d'utiliser le setManagers qui prend un seul argument
-                                            // si les autres managers ne sont pas nécessaires.
+            c.setManagers(documentManager, adherentManager, empruntManager); // Il est plus simple d'utiliser le
+                                                                             // setManagers qui prend un seul argument
+            // si les autres managers ne sont pas nécessaires.
+            c.setAdherent(adherent);
         });
     }
 
     @FXML
     void mes_emprints(ActionEvent event) {
-        // Logique de chargement de la vue des emprunts Non-Admin
+
+        loadPage("/com/sgeb/sgbd/view/TableauMesEmpunts.fxml", controller -> {
+
+            MesEmpruntsController c = (MesEmpruntsController) controller;
+
+            c.setDependencies(empruntManager, adherent);
+        });
     }
 
     @FXML

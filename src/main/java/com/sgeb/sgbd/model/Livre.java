@@ -72,7 +72,42 @@ public class Livre extends Document {
 
     @Override
     public String toString() {
-        return super.toString() + " - Livre ISBN:" + ISBN;
+
+        // 1. Gère et formate la liste des auteurs (copié/adapté de la classe Document
+        // pour l'autonomie)
+        String auteursStr;
+        if (auteurs.isEmpty()) {
+            auteursStr = "Auteur(s) non spécifié(s)";
+        } else if (auteurs.size() == 1) {
+            auteursStr = auteurs.get(0);
+        } else {
+            // Liste les deux premiers auteurs, puis ajoute "et al." si plus de deux
+            StringBuilder sb = new StringBuilder();
+            sb.append(auteurs.get(0));
+            if (auteurs.size() > 1) {
+                sb.append(", ").append(auteurs.get(1));
+            }
+            if (auteurs.size() > 2) {
+                sb.append(", et al.");
+            }
+            auteursStr = sb.toString();
+        }
+
+        // 2. Formatage complet des informations du Livre
+        return String.format(
+                "Livre [ID: %d] : %s\n" +
+                        "  Auteur(s): %s\n" +
+                        "  Publié en %d par %s (Collection: %s)\n" +
+                        "  ISBN: %s | Pages: %d | Catégorie: %s",
+                idDocument,
+                titre,
+                auteursStr,
+                anneePublication,
+                (editeur != null && !editeur.isEmpty() ? editeur : "Inconnu"),
+                (collection != null && !collection.isEmpty() ? collection : "N/A"),
+                (ISBN != null && !ISBN.isEmpty() ? ISBN : "N/A"),
+                nbPages,
+                (categorie != null ? categorie.name() : "N/A"));
     }
 
 }

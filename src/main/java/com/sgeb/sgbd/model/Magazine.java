@@ -3,6 +3,7 @@ package com.sgeb.sgbd.model;
 import com.sgeb.sgbd.model.enums.TypeDocument;
 import com.sgeb.sgbd.model.enums.Categorie;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class Magazine extends Document {
@@ -74,6 +75,23 @@ public class Magazine extends Document {
     @Override
     public String toString() {
         return super.toString() + " - Magazine n°" + numero;
+    }
+
+    public void setDatePublication(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            this.datePublication = null;
+            return;
+        }
+        try {
+            // Tente de parser la chaîne en LocalDate (utilise le format ISO YYYY-MM-DD par
+            // défaut)
+            this.datePublication = LocalDate.parse(dateStr.trim());
+        } catch (DateTimeParseException e) {
+            // Gérer l'erreur de formatage. Pour le moment, nous laissons la date à null
+            // ou vous pouvez jeter une RuntimeException ou ignorer l'entrée.
+            System.err.println("Erreur de format de date pour le Magazine : " + dateStr);
+            this.datePublication = null;
+        }
     }
 
 }

@@ -75,18 +75,22 @@ public class EmpruntDAO {
 
     public List<Emprunt> findAll(DocumentDAO documentDAO, AdherentDAO adherentDAO) throws SQLException {
         List<Emprunt> list = new ArrayList<>();
+
         String sql = "SELECT id FROM emprunt";
 
         try (Connection conn = Database.getConnection();
                 Statement st = conn.createStatement();
                 ResultSet rs = st.executeQuery(sql)) {
             conn.setAutoCommit(false);
-
+            System.out.println("rrrrrrrrrrrrrr");
             while (rs.next()) {
                 findById(rs.getInt("id"), documentDAO, adherentDAO).ifPresent(list::add);
             }
+            System.out.println("rrrrrrrrrrrrrr");
             conn.commit();
         }
+        System.out.println("rrrrrrrrrrrrrr");
+        System.out.println(list.get(0));
         return list;
     }
 

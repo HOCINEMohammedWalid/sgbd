@@ -85,16 +85,28 @@ public class Emprunt {
         this.payee = true;
     }
 
-    @Override
-    public String toString() {
-        return String.format(
-                "Emprunt[%d] Document='%s', Adhérent='%s', Emprunt=%s, Retour prévu=%s, Retour réel=%s, Pénalité=%.2f€",
-                idEmprunt,
-                document.getTitre(),
-                adherent.getNomComplet(),
-                dateEmprunt,
-                dateRetourPrevue,
-                dateRetourReelle != null ? dateRetourReelle : "non retourné",
-                penalite);
+    public String getDocumentTitre() {
+        if (this.document != null) {
+
+            return document.getTitre();
+        } else {
+            return "[document non lié]";
+        }
+
     }
+
+    // Dans com.sgeb.sgbd.model.Emprunt (Ligne 93 ou aux alentours)
+    public String getNomCompletAdherent() {
+
+        if (this.adherent != null) {
+
+            String nom = (this.adherent.getNom() != null) ? this.adherent.getNom() : "";
+            String prenom = (this.adherent.getPrenom() != null) ? this.adherent.getPrenom() : "";
+
+            return nom + " " + prenom;
+        } else {
+            return "[Adhérent non lié]";
+        }
+    }
+
 }

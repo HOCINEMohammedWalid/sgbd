@@ -4,7 +4,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -14,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" stylesheets="@PagePrincipale.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sgeb.sgbd.controllers.DetailsDVDController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="400.0" stylesheets="@PagePrincipale.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sgeb.sgbd.controllers.DetailsAdherentController">
    <styleClass>
       <String fx:value="white-bg" />
       <String fx:value="shadow" />
@@ -22,7 +21,7 @@
    <children>
       <AnchorPane prefHeight="70.0" prefWidth="400.0" stylesheets="@PagePrincipale.css">
          <children>
-            <Text fill="WHITE" layoutX="146.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Details DVD">
+            <Text fill="WHITE" layoutX="129.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Details Adherent">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -36,7 +35,7 @@
       </AnchorPane>
       <HBox prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Titre :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Nom" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -44,7 +43,7 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <TextField fx:id="titre">
+            <TextField fx:id="nom">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
@@ -53,7 +52,7 @@
       </HBox>
       <HBox layoutX="10.0" layoutY="74.0" prefHeight="35.0" prefWidth="382.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Auteurs :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Prenom" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -61,7 +60,7 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <TextField fx:id="Auteurs" promptText="Séparer par virgules">
+            <TextField fx:id="prenom">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
@@ -70,7 +69,7 @@
       </HBox>
       <HBox prefHeight="0.0" prefWidth="366.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Éditeur :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="E-mail" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -78,46 +77,16 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <TextField fx:id="editeur">
+            <TextField fx:id="email">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
             </TextField>
-         </children>
-      </HBox>
-      <HBox layoutX="10.0" layoutY="149.0" prefHeight="37.0" prefWidth="370.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Année de publication" wrappingWidth="120.0">
-               <font>
-                  <Font name="System Italic" size="14.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="30.0" top="8.0" />
-               </HBox.margin>
-            </Text>
-            <Spinner fx:id="annee_p">
-               <HBox.margin>
-                  <Insets top="8.0" />
-               </HBox.margin>
-            </Spinner>
-         </children>
-      </HBox>
-      <HBox layoutX="10.0" layoutY="335.0" prefHeight="0.0" prefWidth="366.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Catégorie :" wrappingWidth="120.0">
-               <font>
-                  <Font name="System Italic" size="14.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="30.0" top="8.0" />
-               </HBox.margin>
-            </Text>
-            <ChoiceBox fx:id="catg" prefWidth="150.0" />
          </children>
       </HBox>
       <HBox layoutX="10.0" layoutY="111.0" prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Mots clés :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Téléphone" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -125,33 +94,16 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <TextField fx:id="mot_cles" promptText="Séparer par virgules">
+            <TextField fx:id="tel">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
             </TextField>
          </children>
       </HBox>
-      <HBox prefHeight="0.0" prefWidth="366.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Langue :" wrappingWidth="120.0">
-               <font>
-                  <Font name="System Italic" size="14.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="30.0" top="8.0" />
-               </HBox.margin>
-            </Text>
-            <ChoiceBox fx:id="langue" prefWidth="150.0">
-               <HBox.margin>
-                  <Insets top="8.0" />
-               </HBox.margin>
-            </ChoiceBox>
-         </children>
-      </HBox>
       <HBox prefHeight="80.0" prefWidth="370.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Résumé :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Adresse" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -159,7 +111,7 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <TextArea fx:id="resume" prefHeight="200.0" prefWidth="200.0">
+            <TextArea fx:id="adress" prefHeight="200.0" prefWidth="200.0">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
@@ -168,7 +120,7 @@
       </HBox>
       <HBox prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Realisateur :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Date d'inscription " wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -176,7 +128,7 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <TextField fx:id="realisateur">
+            <TextField fx:id="date">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
@@ -185,7 +137,7 @@
       </HBox>
       <HBox prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="duree(en min) :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Status" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -193,34 +145,17 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <Spinner fx:id="duree">
+            <ChoiceBox fx:id="status" prefWidth="150.0">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
-            </Spinner>
-         </children>
-      </HBox>
-      <HBox prefHeight="37.0" prefWidth="370.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Classification :" wrappingWidth="120.0">
-               <font>
-                  <Font name="System Italic" size="14.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="30.0" top="8.0" />
-               </HBox.margin>
-            </Text>
-            <TextField fx:id="classification">
-               <HBox.margin>
-                  <Insets top="8.0" />
-               </HBox.margin>
-            </TextField>
+            </ChoiceBox>
          </children>
       </HBox>
       <Pane prefHeight="58.0" prefWidth="400.0">
          <children>
-            <Button fx:id="Update" layoutX="90.0" layoutY="12.0" mnemonicParsing="false" onAction="#update" prefHeight="26.0" prefWidth="95.0" text="Update" />
-            <Button fx:id="Anuller" layoutX="230.0" layoutY="12.0" mnemonicParsing="false" onAction="#anuller" prefHeight="26.0" prefWidth="95.0" text="Anuller" />
+            <Button fx:id="Update" layoutX="95.0" layoutY="16.0" mnemonicParsing="false" onAction="#update" prefHeight="26.0" prefWidth="95.0" text="Update" />
+            <Button fx:id="Anuller" layoutX="210.0" layoutY="16.0" mnemonicParsing="false" onAction="#anuller" prefHeight="26.0" prefWidth="95.0" text="Anuller" />
          </children>
       </Pane>
    </children>

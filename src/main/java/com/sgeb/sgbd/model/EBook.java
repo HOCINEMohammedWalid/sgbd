@@ -68,8 +68,37 @@ public class EBook extends Document {
         System.out.println("Résumé de l'EBook : " + super.resume);
     }
 
+    // Dans com.sgeb.sgbd.model.EBook
+
     @Override
     public String toString() {
-        return getDescriptionComplete();
+
+        // 1. Gère l'affichage du statut DRM
+        String drmStatus = drm ? "OUI (Protection)" : "NON";
+
+        // 2. Simplifie l'URL pour la lisibilité (affiche juste le début ou un
+        // indicateur)
+        String urlSummary;
+        if (urlAcces != null && urlAcces.length() > 30) {
+            urlSummary = urlAcces.substring(0, 30) + "...";
+        } else if (urlAcces != null && !urlAcces.isEmpty()) {
+            urlSummary = urlAcces;
+        } else {
+            urlSummary = "Lien non spécifié";
+        }
+
+        // 3. Formatage complet des informations de l'EBook
+        return String.format(
+                "EBook [ID: %d] : %s\n" +
+                        "  Format: %s | DRM: %s\n" +
+                        "  Accès: %s\n" +
+                        "  Éditeur: %s | Année: %d",
+                idDocument,
+                titre,
+                (format != null && !format.isEmpty() ? format : "Inconnu"),
+                drmStatus,
+                urlSummary,
+                (editeur != null && !editeur.isEmpty() ? editeur : "N/A"),
+                anneePublication);
     }
 }

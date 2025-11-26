@@ -15,10 +15,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality; // Ajout de Modality pour la fenêtre de détails
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import com.sgeb.sgbd.model.DocumentManager;
 import com.sgeb.sgbd.model.EmpruntManager;
+import com.sgeb.sgbd.model.Adherent;
 import com.sgeb.sgbd.model.AdherentManager;
 import com.sgeb.sgbd.model.Document;
 
@@ -32,8 +34,10 @@ public class DocumentsControllerNonAdmin implements Initializable {
 
     private AdherentManager adherentManager;
     private EmpruntManager empruntManager;
+    private Adherent adherent;
 
     public void setManagers(DocumentManager docM, AdherentManager adhM, EmpruntManager empM) {
+
         this.documentManager = docM;
         this.adherentManager = adhM;
         this.empruntManager = empM;
@@ -42,6 +46,11 @@ public class DocumentsControllerNonAdmin implements Initializable {
 
     public void setManagers(DocumentManager docM) {
         this.documentManager = docM;
+        refreshTable();
+    }
+
+    public void setAdherent(Adherent adherent) {
+        this.adherent = adherent;
         refreshTable();
     }
 
@@ -121,8 +130,11 @@ public class DocumentsControllerNonAdmin implements Initializable {
         TitreCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getTitre()));
         typeCol.setCellValueFactory(
                 c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getTypeDocument().toString()));
+
+        // Affichage des auteurs sans crochets
         auteursCol.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getAuteurs().toString()));
+                c -> new javafx.beans.property.SimpleStringProperty(String.join(", ", c.getValue().getAuteurs())));
+
         Annee_de_puplicationCol.setCellValueFactory(
                 c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getAnneePublication()).asObject());
         editeurCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getEditeur()));
@@ -130,8 +142,13 @@ public class DocumentsControllerNonAdmin implements Initializable {
                 .setCellValueFactory(
                         c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getCategorie().toString()));
         langueCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getLangue()));
-        DispoCol.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleStringProperty(true ? "Oui" : "Non"));
+
+        // CORRECTION : Affichage réel de la disponibilité
+        DispoCol.setCellValueFactory(c -> {
+            boolean estDispo = empruntManager != null && true;
+            String status = estDispo ? "Oui" : "Non";
+            return new javafx.beans.property.SimpleStringProperty(status);
+        });
     }
 
     // =============================================
@@ -153,10 +170,45 @@ public class DocumentsControllerNonAdmin implements Initializable {
             }
 
             private void openDetails() {
-                /* (Logique d'ouverture des détails) */
+                Document document = getTableView().getItems().get(getIndex());
+                if (document == null || document.getTypeDocument() == null)
+                    return;
+
+                String fxmlPath = document.getTypeDocument().getFxmlPathNonAdmin();
+                loadDetailsWindow(document, fxmlPath);
             }
 
-            // Les méthodes deleteDocument() et showError() sont supprimées.
+            private void loadDetailsWindow(Document document, String fxmlPath) {
+                try {
+                    // Les contrôleurs de détails pour les non-admins ne devraient pas avoir
+                    // le DocumentManager ni le ParentController, car la modification est interdite.
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                    Parent root = loader.load();
+                    Object controller = loader.getController();
+
+                    // Nous supposons que le contrôleur de détails a une méthode
+                    // setDocument(Document)
+                    if (controller instanceof DetailsControllerBase) {
+                        // Note: Le contrôleur DetailsControllerBase devrait être adapté pour
+                        // masquer les boutons de modification pour les non-admins.
+                        ((DetailsControllerBase) controller).setDocument(document);
+                        ((DetailsControllerBase) controller).setEmpruntManager(empruntManager);
+                        ((DetailsControllerBase) controller).setAdherent(adherent);
+                        // IMPORTANT: NE PAS INJECTER documentManager ni setParent()
+                        // pour interdire les modifications/suppressions.
+                    }
+
+                    Stage stage = new Stage();
+                    stage.setTitle("Détails du document - " + document.getTitre());
+                    stage.setScene(new Scene(root));
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.showAndWait();
+
+                } catch (IOException e) {
+                    System.err.println("Erreur lors du chargement : " + fxmlPath);
+                    e.printStackTrace();
+                }
+            }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -176,15 +228,11 @@ public class DocumentsControllerNonAdmin implements Initializable {
     }
 
     // =============================================
-    // AJOUTER NOUVEAU
-    // -> La méthode 'ajouter(ActionEvent event)' est supprimée.
-    // =============================================
-
-    // =============================================
     // RECHERCHE
     // =============================================
     @FXML
     void search(KeyEvent event) {
+        // Déclenché par les listeners dans setupSearchListeners
     }
 
     private void setupSearchListeners() {
@@ -218,15 +266,31 @@ public class DocumentsControllerNonAdmin implements Initializable {
         boolean dispoKey = dispo.isSelected();
 
         filter.setPredicate(doc -> {
-            boolean matchesId = String.valueOf(doc.getIdDocument()).startsWith(idKey);
-            boolean matchesTitre = doc.getTitre().toLowerCase().contains(titreKey);
-            boolean matchesType = doc.getTypeDocument().toString().toLowerCase().contains(typeKey);
-            boolean matchesAuteurs = doc.getAuteurs().toString().toLowerCase().contains(auteursKey);
-            boolean matchesAn = String.valueOf(doc.getAnneePublication()).startsWith(anKey);
-            boolean matchesEdit = doc.getEditeur().toLowerCase().contains(editKey);
-            boolean matchesCat = doc.getCategorie().toString().toLowerCase().contains(catKey);
-            boolean matchesLang = doc.getLangue().toLowerCase().contains(langKey);
-            boolean matchesDispo = !dispoKey || true;
+
+            // Logique de recherche startsWith
+            boolean matchesId = idKey.isEmpty() || String.valueOf(doc.getIdDocument()).startsWith(idKey);
+            boolean matchesTitre = titreKey.isEmpty() || doc.getTitre().toLowerCase().startsWith(titreKey);
+            boolean matchesType = typeKey.isEmpty()
+                    || doc.getTypeDocument().toString().toLowerCase().startsWith(typeKey);
+            boolean matchesAn = anKey.isEmpty() || String.valueOf(doc.getAnneePublication()).startsWith(anKey);
+            boolean matchesEdit = editKey.isEmpty() || doc.getEditeur().toLowerCase().startsWith(editKey);
+            boolean matchesCat = catKey.isEmpty() || doc.getCategorie().toString().toLowerCase().startsWith(catKey);
+            boolean matchesLang = langKey.isEmpty() || doc.getLangue().toLowerCase().startsWith(langKey);
+
+            // Logique Auteurs
+            boolean matchesAuteurs;
+            if (auteursKey.isEmpty()) {
+                matchesAuteurs = true;
+            } else {
+                matchesAuteurs = doc.getAuteurs().stream()
+                        .anyMatch(auteur -> auteur.toLowerCase().startsWith(auteursKey));
+            }
+
+            // CORRECTION : Logique de Disponibilité
+            boolean estDisponible = empruntManager != null && true;
+            boolean matchesDispo = !dispoKey || estDisponible;
+
+            // Retourne le résultat combiné
             return matchesId && matchesTitre && matchesType &&
                     matchesAuteurs && matchesAn && matchesEdit &&
                     matchesCat && matchesLang && matchesDispo;

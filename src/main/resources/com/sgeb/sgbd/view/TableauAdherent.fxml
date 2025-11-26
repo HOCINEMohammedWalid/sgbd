@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="885.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MvcController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="564.0" prefWidth="885.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sgeb.sgbd.controllers.AdherentsController">
    <children>
       <AnchorPane layoutX="12.0" layoutY="8.0" prefHeight="539.0" prefWidth="860.0" stylesheets="@PagePrincipale.css">
          <children>
@@ -22,22 +22,22 @@
                       <TableColumn fx:id="IDCol" prefWidth="44.0" text="ID" />
                       <TableColumn fx:id="NomCol" prefWidth="105.0" text="Nom" />
                         <TableColumn fx:id="PrenomCol" prefWidth="118.0" text="Prénom" />
-                        <TableColumn fx:id="AgeCol" prefWidth="112.0" text="e-mail" />
-                        <TableColumn fx:id="VilleCol" prefWidth="110.0" text="Téléphone" />
-                        <TableColumn fx:id="DepCol" prefWidth="100.0" text="Adresse" />
-                        <TableColumn fx:id="NBureauCol" prefWidth="100.0" text="date d'inscreption" />
-                        <TableColumn fx:id="EtudiantCol" prefWidth="70.0" text="Status" />
+                        <TableColumn fx:id="emailCol" prefWidth="112.0" text="e-mail" />
+                        <TableColumn fx:id="TelephoneCol" prefWidth="110.0" text="Téléphone" />
+                        <TableColumn fx:id="AdressCol" prefWidth="100.0" text="Adresse" />
+                        <TableColumn fx:id="dateCol" prefWidth="100.0" text="date d'inscreption" />
+                        <TableColumn fx:id="StatutCol" prefWidth="70.0" text="Status" />
                         <TableColumn fx:id="DetailsCol" prefWidth="82.0" text="Détails" />
                     </columns>
                   </TableView>
                   <TextField fx:id="id_search" layoutX="8.0" layoutY="14.0" prefHeight="25.0" prefWidth="44.0" promptText="Search ID" />
                   <TextField fx:id="nom_search" layoutX="52.0" layoutY="14.0" prefHeight="25.0" prefWidth="105.0" promptText="Search Nom" />
                   <TextField fx:id="prenom_search" layoutX="158.0" layoutY="14.0" prefHeight="25.0" prefWidth="118.0" promptText="Search Prénom" />
-                  <TextField fx:id="ville_search" layoutX="276.0" layoutY="14.0" prefHeight="25.0" prefWidth="112.0" promptText="Search e-mail" />
-                  <TextField fx:id="dep_search" layoutX="388.0" layoutY="14.0" prefHeight="25.0" prefWidth="110.0" promptText="Search Téléphone" />
-                  <TextField fx:id="num_search" layoutX="498.0" layoutY="14.0" prefHeight="25.0" prefWidth="100.0" promptText="Search Adresse" />
-                  <TextField fx:id="etudiant_search" layoutX="598.0" layoutY="14.0" prefHeight="25.0" prefWidth="100.0" promptText="Search Date d'inscreption" />
-                  <TextField fx:id="region_search" layoutX="698.0" layoutY="14.0" prefHeight="26.0" prefWidth="70.0" promptText="Search Status" />
+                  <TextField fx:id="email_search" layoutX="276.0" layoutY="14.0" prefHeight="25.0" prefWidth="112.0" promptText="Search e-mail" />
+                  <TextField fx:id="tel_search" layoutX="388.0" layoutY="14.0" prefHeight="25.0" prefWidth="110.0" promptText="Search Téléphone" />
+                  <TextField fx:id="adress_search" layoutX="498.0" layoutY="14.0" prefHeight="25.0" prefWidth="100.0" promptText="Search Adresse" />
+                  <TextField fx:id="date_search" layoutX="598.0" layoutY="14.0" prefHeight="25.0" prefWidth="100.0" promptText="Search Date d'inscreption" />
+                  <TextField fx:id="status_search" layoutX="698.0" layoutY="14.0" prefHeight="26.0" prefWidth="70.0" promptText="Search Status" />
                   <Button layoutX="793.0" layoutY="14.0" mnemonicParsing="false" onAction="#ajoute" prefHeight="25.0" prefWidth="56.0" style="-fx-background-color: #fb8500;" text="Ajouter" textFill="WHITE" />
                </children>
             </AnchorPane>

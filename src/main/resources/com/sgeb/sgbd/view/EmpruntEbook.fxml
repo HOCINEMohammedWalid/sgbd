@@ -3,8 +3,7 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -14,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" stylesheets="@PagePrincipale.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sgeb.sgbd.controllers.DetailsDVDController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" stylesheets="@PagePrincipale.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sgeb.sgbd.controllers.DetailsEbookControllerNonAdmin">
    <styleClass>
       <String fx:value="white-bg" />
       <String fx:value="shadow" />
@@ -22,7 +21,7 @@
    <children>
       <AnchorPane prefHeight="70.0" prefWidth="400.0" stylesheets="@PagePrincipale.css">
          <children>
-            <Text fill="WHITE" layoutX="146.0" layoutY="41.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Details DVD">
+            <Text fill="WHITE" layoutX="139.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Details EBook">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
@@ -95,11 +94,11 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <Spinner fx:id="annee_p">
+            <TextField fx:id="annee_p">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
-            </Spinner>
+            </TextField>
          </children>
       </HBox>
       <HBox layoutX="10.0" layoutY="335.0" prefHeight="0.0" prefWidth="366.0">
@@ -112,7 +111,7 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <ChoiceBox fx:id="catg" prefWidth="150.0" />
+            <TextField fx:id="catg" />
          </children>
       </HBox>
       <HBox layoutX="10.0" layoutY="111.0" prefHeight="37.0" prefWidth="370.0">
@@ -142,11 +141,11 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <ChoiceBox fx:id="langue" prefWidth="150.0">
+            <TextField fx:id="langue">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
-            </ChoiceBox>
+            </TextField>
          </children>
       </HBox>
       <HBox prefHeight="80.0" prefWidth="370.0">
@@ -168,7 +167,7 @@
       </HBox>
       <HBox prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Realisateur :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="urlAcces :" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -176,7 +175,7 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <TextField fx:id="realisateur">
+            <TextField fx:id="url">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
@@ -185,7 +184,7 @@
       </HBox>
       <HBox prefHeight="37.0" prefWidth="370.0">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="duree(en min) :" wrappingWidth="120.0">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Format :" wrappingWidth="120.0">
                <font>
                   <Font name="System Italic" size="14.0" />
                </font>
@@ -193,33 +192,36 @@
                   <Insets left="30.0" top="8.0" />
                </HBox.margin>
             </Text>
-            <Spinner fx:id="duree">
-               <HBox.margin>
-                  <Insets top="8.0" />
-               </HBox.margin>
-            </Spinner>
-         </children>
-      </HBox>
-      <HBox prefHeight="37.0" prefWidth="370.0">
-         <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Classification :" wrappingWidth="120.0">
-               <font>
-                  <Font name="System Italic" size="14.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="30.0" top="8.0" />
-               </HBox.margin>
-            </Text>
-            <TextField fx:id="classification">
+            <TextField fx:id="doi">
                <HBox.margin>
                   <Insets top="8.0" />
                </HBox.margin>
             </TextField>
+         </children>
+      </HBox>
+      <HBox prefHeight="37.0" prefWidth="370.0">
+         <children>
+            <CheckBox fx:id="drm" mnemonicParsing="false">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="30.0" top="8.0" />
+               </HBox.margin>
+            </CheckBox>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gestion des Droits Numériques" wrappingWidth="211.20001983642578">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+               <HBox.margin>
+                  <Insets left="5.0" top="8.0" />
+               </HBox.margin>
+            </Text>
          </children>
       </HBox>
       <Pane prefHeight="58.0" prefWidth="400.0">
          <children>
-            <Button fx:id="Update" layoutX="90.0" layoutY="12.0" mnemonicParsing="false" onAction="#update" prefHeight="26.0" prefWidth="95.0" text="Update" />
+            <Button fx:id="Emprunte" layoutX="90.0" layoutY="12.0" mnemonicParsing="false" onAction="#emprunter" prefHeight="26.0" prefWidth="95.0" text="Emprunter" />
             <Button fx:id="Anuller" layoutX="230.0" layoutY="12.0" mnemonicParsing="false" onAction="#anuller" prefHeight="26.0" prefWidth="95.0" text="Anuller" />
          </children>
       </Pane>

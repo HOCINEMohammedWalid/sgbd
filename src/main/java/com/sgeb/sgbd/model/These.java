@@ -3,6 +3,7 @@ package com.sgeb.sgbd.model;
 import com.sgeb.sgbd.model.enums.Categorie;
 import com.sgeb.sgbd.model.enums.TypeDocument;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 public class These extends Document {
@@ -91,8 +92,44 @@ public class These extends Document {
         System.out.println("Résumé de la thèse : " + super.resume);
     }
 
+    // Dans com.sgeb.sgbd.model.These
+
     @Override
     public String toString() {
-        return getDescriptionComplete();
+
+        // 1. Gère l'affichage de la date
+        String dateStr = (dateSoutenance != null) ? dateSoutenance.toString() : "Date inconnue";
+
+        // 2. Formatage complet des informations de la Thèse
+        return String.format(
+                "Thèse [ID: %d] : %s\n" +
+                        "  Auteur: %s | Directeur: %s\n" +
+                        "  Université: %s (%s)\n" +
+                        "  Soutenue le: %s | Accès: %s\n" +
+                        "  Discipline: %s",
+                idDocument,
+                titre,
+                (auteurPrincipal != null && !auteurPrincipal.isEmpty() ? auteurPrincipal : "N/A"),
+                (directeurRecherche != null && !directeurRecherche.isEmpty() ? directeurRecherche : "N/A"),
+                (universite != null && !universite.isEmpty() ? universite : "N/A"),
+                anneePublication,
+                dateStr,
+                (typeAcces != null && !typeAcces.isEmpty() ? typeAcces : "N/A"),
+                (discipline != null && !discipline.isEmpty() ? discipline : "N/A"));
+    }
+
+    // NOUVEAU SETTER SURCHARGE pour accepter un String depuis le TextField
+    public void setDateSoutenance(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            this.dateSoutenance = null;
+            return;
+        }
+        try {
+            // Utilise le parser par défaut : YYYY-MM-DD)
+            this.dateSoutenance = LocalDate.parse(dateStr.trim());
+        } catch (DateTimeParseException e) {
+            System.err.println("Avertissement: Format de date invalide pour la soutenance: " + dateStr);
+
+        }
     }
 }

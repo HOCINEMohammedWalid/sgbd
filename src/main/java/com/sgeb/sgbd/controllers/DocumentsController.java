@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import com.sgeb.sgbd.model.DocumentManager;
@@ -123,8 +124,9 @@ public class DocumentsController implements Initializable {
         TitreCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getTitre()));
         typeCol.setCellValueFactory(
                 c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getTypeDocument().toString()));
+        // Dans DocumentsController.java -> configurerColonnes()
         auteursCol.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getAuteurs().toString()));
+                c -> new javafx.beans.property.SimpleStringProperty(String.join(", ", c.getValue().getAuteurs())));
         Annee_de_puplicationCol.setCellValueFactory(
                 c -> new javafx.beans.property.SimpleIntegerProperty(c.getValue().getAnneePublication()).asObject());
         editeurCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getEditeur()));
@@ -160,22 +162,45 @@ public class DocumentsController implements Initializable {
             }
 
             private void openDetails() {
-                /*
-                 * Document doc = getTableView().getItems().get(getIndex());
-                 * try {
-                 * FXMLLoader loader = new
-                 * FXMLLoader(getClass().getResource("/view/DetailsDocument.fxml"));
-                 * Parent root = loader.load();
-                 * DetailsDocumentController controller = loader.getController();
-                 * controller.setDocument(doc);
-                 * Stage stage = new Stage();
-                 * stage.setScene(new Scene(root));
-                 * stage.setTitle("Détails du document");
-                 * stage.show();
-                 * } catch (IOException ex) {
-                 * ex.printStackTrace();
-                 * }
-                 */
+                Document document = getTableView().getItems().get(getIndex());
+                if (document == null || document.getTypeDocument() == null)
+                    return;
+
+                String fxmlPath = document.getTypeDocument().getFxmlPath();
+                loadDetailsWindow(document, fxmlPath);
+            }
+
+            private void loadDetailsWindow(Document document, String fxmlPath) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+                    Parent root = loader.load();
+
+                    // Récupérer le contrôleur associé au fichier FXML chargé
+                    Object controller = loader.getController();
+
+                    // Vérifier si le contrôleur implémente l'interface DetailsControllerBase
+                    if (controller instanceof DetailsControllerBase) {
+                        ((DetailsControllerBase) controller).setDocument(document);
+
+                        ((DetailsControllerBase) controller).setDocumentManager(documentManager);
+                        ((DetailsControllerBase) controller).setParent(DocumentsController.this);
+                    } else {
+                        System.err.println(
+                                "Attention : Le contrôleur " + controller.getClass().getSimpleName() +
+                                        " n'implémente pas DetailsControllerBase. Impossible de transmettre le document.");
+                    }
+
+                    // Création de la fenêtre
+                    Stage stage = new Stage();
+                    stage.setTitle("Détails du document - " + document.getTitre());
+                    stage.setScene(new Scene(root));
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.showAndWait();
+
+                } catch (IOException e) {
+                    System.err.println("Erreur lors du chargement : " + fxmlPath);
+                    e.printStackTrace();
+                }
             }
 
             private void deleteDocument() {
@@ -275,7 +300,7 @@ public class DocumentsController implements Initializable {
         String idKey = id_search.getText().toLowerCase();
         String titreKey = titre_search.getText().toLowerCase();
         String typeKey = type_search.getText().toLowerCase();
-        String auteursKey = auteurs_search.getText().toLowerCase();
+        String auteursKey = auteurs_search.getText().toLowerCase(); // La clé de recherche de l'utilisateur
         String anKey = annPub_search.getText().toLowerCase();
         String editKey = editeur_search.getText().toLowerCase();
         String catKey = catg_search.getText().toLowerCase();
@@ -283,15 +308,35 @@ public class DocumentsController implements Initializable {
         boolean dispoKey = dispo.isSelected();
 
         filter.setPredicate(doc -> {
-            boolean matchesId = String.valueOf(doc.getIdDocument()).startsWith(idKey);
-            boolean matchesTitre = doc.getTitre().toLowerCase().contains(titreKey);
-            boolean matchesType = doc.getTypeDocument().toString().toLowerCase().contains(typeKey);
-            boolean matchesAuteurs = doc.getAuteurs().toString().toLowerCase().contains(auteursKey);
-            boolean matchesAn = String.valueOf(doc.getAnneePublication()).startsWith(anKey);
-            boolean matchesEdit = doc.getEditeur().toLowerCase().contains(editKey);
-            boolean matchesCat = doc.getCategorie().toString().toLowerCase().contains(catKey);
-            boolean matchesLang = doc.getLangue().toLowerCase().contains(langKey);
-            boolean matchesDispo = !dispoKey || true;
+            // --- Logique "starts with" pour tous les champs ---
+
+            // Les vérifications de chaînes simples restent les mêmes (elles fonctionnent)
+            boolean matchesId = idKey.isEmpty() || String.valueOf(doc.getIdDocument()).startsWith(idKey);
+            boolean matchesTitre = titreKey.isEmpty() || doc.getTitre().toLowerCase().startsWith(titreKey);
+            boolean matchesType = typeKey.isEmpty()
+                    || doc.getTypeDocument().toString().toLowerCase().startsWith(typeKey);
+            boolean matchesAn = anKey.isEmpty() || String.valueOf(doc.getAnneePublication()).startsWith(anKey);
+            boolean matchesEdit = editKey.isEmpty() || doc.getEditeur().toLowerCase().startsWith(editKey);
+            boolean matchesCat = catKey.isEmpty() || doc.getCategorie().toString().toLowerCase().startsWith(catKey);
+            boolean matchesLang = langKey.isEmpty() || doc.getLangue().toLowerCase().startsWith(langKey);
+
+            // --- CORRECTION pour les Auteurs ---
+            boolean matchesAuteurs;
+            if (auteursKey.isEmpty()) {
+                // Si la clé de recherche est vide, on considère que ça correspond à tout.
+                matchesAuteurs = true;
+            } else {
+                // On vérifie si AU MOINS UN auteur dans la liste du document commence par la
+                // clé de recherche.
+                matchesAuteurs = doc.getAuteurs().stream()
+                        .anyMatch(auteur -> auteur.toLowerCase().startsWith(auteursKey));
+            }
+
+            // Logique de Disponibilité
+            boolean estDisponible = empruntManager != null && true;
+            boolean matchesDispo = !dispoKey || estDisponible;
+
+            // Retourne le résultat combiné
             return matchesId && matchesTitre && matchesType &&
                     matchesAuteurs && matchesAn && matchesEdit &&
                     matchesCat && matchesLang && matchesDispo;
