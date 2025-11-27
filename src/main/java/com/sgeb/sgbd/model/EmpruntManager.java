@@ -52,7 +52,8 @@ public class EmpruntManager {
         LocalDate dateRetourPrevue = dateEmprunt.plusDays(dureeEmpruntJours);
 
         Emprunt e = new Emprunt(0, doc, adherent, dateEmprunt, dateRetourPrevue);
-
+        doc.setDispo(false);
+        documentDAO.update(doc);
         empruntDAO.insert(e);
 
         adherent.ajouterEmprunt(e);
@@ -71,7 +72,7 @@ public class EmpruntManager {
 
         long retard = ChronoUnit.DAYS.between(e.getDateRetourPrevue(), dateRetour);
         e.setPenalite(retard > 0 ? retard * penaliteParJour : 0);
-
+        e.getDocument().setDispo(true);
         empruntDAO.update(e);
     }
 
@@ -86,7 +87,7 @@ public class EmpruntManager {
     }
 
     public List<Emprunt> listerEmprunts() throws SQLException {
-        System.out.println("hhhhhk");
+
         return empruntDAO.findAll(documentDAO, adherentDAO).stream()
                 .sorted(Comparator.comparing(Emprunt::getDateEmprunt))
                 .collect(Collectors.toList());

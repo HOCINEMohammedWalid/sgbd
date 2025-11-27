@@ -19,7 +19,7 @@ public class DocumentDAO {
         try (Connection conn = Database.getConnection()) {
             conn.setAutoCommit(false); // transaction
 
-            String sql = "INSERT INTO document (titre, type, auteurs, annee_publication, editeur, resume, categorie, mots_cles, langue) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO document (titre, type, auteurs, annee_publication, editeur, resume, categorie, mots_cles, langue,dispo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
             try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, doc.getTitre());
                 ps.setString(2, doc.getTypeDocument().name());
@@ -30,6 +30,7 @@ public class DocumentDAO {
                 ps.setString(7, doc.getCategorie() != null ? doc.getCategorie().name() : null);
                 ps.setString(8, doc.getMotsCles() != null ? String.join(",", doc.getMotsCles()) : null);
                 ps.setString(9, doc.getLangue());
+                ps.setInt(10, doc.isDispo() ? 1 : 0);
 
                 ps.executeUpdate();
 
@@ -168,6 +169,7 @@ public class DocumentDAO {
             d.categorie = rs.getString("categorie") != null ? Categorie.valueOf(rs.getString("categorie")) : null;
             d.motsCles = splitList(rs.getString("mots_cles"));
             d.langue = rs.getString("langue");
+            d.dispo = rs.getBoolean("dispo");
             return d;
         }
     }
@@ -182,6 +184,7 @@ public class DocumentDAO {
         Categorie categorie;
         List<String> motsCles;
         String langue;
+        boolean dispo;
     }
 
     private List<String> splitList(String csv) {
@@ -199,9 +202,11 @@ public class DocumentDAO {
             ResultSet rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-            return new Livre(id, base.titre, base.auteurs, base.annee, base.editeur,
+            Livre l = new Livre(id, base.titre, base.auteurs, base.annee, base.editeur,
                     base.resume, base.categorie, base.motsCles, base.langue,
                     rs.getString("isbn"), rs.getInt("nb_pages"), rs.getString("collection"));
+            l.setDispo(base.dispo);
+            return l;
         }
     }
 
@@ -219,9 +224,11 @@ public class DocumentDAO {
             LocalDate datePublication = rs.getString("date_publication") != null
                     ? LocalDate.parse(rs.getString("date_publication"), DATE_FORMAT)
                     : null;
-            return new Magazine(id, base.titre, base.auteurs, base.annee, base.editeur,
+            Magazine m = new Magazine(id, base.titre, base.auteurs, base.annee, base.editeur,
                     base.resume, base.categorie, base.motsCles, base.langue,
                     rs.getInt("numero"), rs.getString("periodicite"), datePublication);
+            m.setDispo(base.dispo);
+            return m;
         }
     }
 
@@ -236,9 +243,11 @@ public class DocumentDAO {
             ResultSet rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-            return new DVD(id, base.titre, base.auteurs, base.annee, base.editeur,
+            DVD d = new DVD(id, base.titre, base.auteurs, base.annee, base.editeur,
                     base.resume, base.categorie, base.motsCles, base.langue,
                     rs.getString("realisateur"), rs.getInt("duree"), rs.getString("classification"));
+            d.setDispo(base.dispo);
+            return d;
         }
     }
 
@@ -253,9 +262,11 @@ public class DocumentDAO {
             ResultSet rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-            return new EBook(id, base.titre, base.auteurs, base.annee, base.editeur, base.resume,
+            EBook e = new EBook(id, base.titre, base.auteurs, base.annee, base.editeur, base.resume,
                     base.categorie, base.motsCles, base.langue,
                     rs.getString("url_acces"), rs.getString("format"), rs.getBoolean("drm"));
+            e.setDispo(base.dispo);
+            return e;
         }
     }
 
@@ -270,10 +281,13 @@ public class DocumentDAO {
             ResultSet rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-            return new ArticleUniversitaire(id, base.titre, base.auteurs, base.annee, base.editeur,
+            ArticleUniversitaire a = new ArticleUniversitaire(id, base.titre, base.auteurs, base.annee, base.editeur,
                     base.resume, base.categorie, base.motsCles, base.langue,
                     rs.getString("titre_revue"), rs.getInt("volume"), rs.getInt("numero"),
                     rs.getString("pages"), rs.getString("doi"));
+            a.setDispo(base.dispo);
+            return a;
+
         }
     }
 
@@ -291,11 +305,13 @@ public class DocumentDAO {
             LocalDate dateSoutenance = rs.getString("date_soutenance") != null
                     ? LocalDate.parse(rs.getString("date_soutenance"), DATE_FORMAT)
                     : null;
-            return new These(id, base.titre, base.auteurs, base.annee, base.editeur,
+            These t = new These(id, base.titre, base.auteurs, base.annee, base.editeur,
                     base.resume, base.categorie, base.motsCles, base.langue,
                     rs.getString("auteur_principal"), rs.getString("directeur_recherche"),
                     rs.getString("universite"), rs.getString("discipline"),
                     dateSoutenance, rs.getString("type_acces"));
+            t.setDispo(base.dispo);
+            return t;
         }
     }
 
@@ -316,7 +332,7 @@ public class DocumentDAO {
             conn.setAutoCommit(false);
 
             String sql = "UPDATE document SET titre=?, type=?, auteurs=?, annee_publication=?, " +
-                    "editeur=?, resume=?, categorie=?, mots_cles=?, langue=? WHERE id=?";
+                    "editeur=?, resume=?, categorie=?, mots_cles=?, langue=?, dispo=? WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, doc.getTitre());
                 ps.setString(2, doc.getTypeDocument().name());
@@ -327,7 +343,9 @@ public class DocumentDAO {
                 ps.setString(7, doc.getCategorie() != null ? doc.getCategorie().name() : null);
                 ps.setString(8, doc.getMotsCles() != null ? String.join(",", doc.getMotsCles()) : null);
                 ps.setString(9, doc.getLangue());
-                ps.setInt(10, doc.getIdDocument());
+                ps.setInt(10, doc.isDispo() ? 1 : 0);
+                ps.setInt(11, doc.getIdDocument());
+
                 ps.executeUpdate();
             }
 
@@ -337,20 +355,72 @@ public class DocumentDAO {
     }
 
     private void updateSpecific(Document doc, Connection conn) throws SQLException {
-        // similaire à insertSpecific mais avec UPDATE
         if (doc instanceof Livre) {
             Livre l = (Livre) doc;
-            try (PreparedStatement ps = conn
-                    .prepareStatement("UPDATE livre SET isbn=?, nb_pages=?, collection=? WHERE id=?")) {
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE livre SET isbn=?, nb_pages=?, collection=? WHERE id=?")) {
                 ps.setString(1, l.getISBN());
                 ps.setInt(2, l.getNbPages());
                 ps.setString(3, l.getCollection());
                 ps.setInt(4, l.getIdDocument());
                 ps.executeUpdate();
             }
+        } else if (doc instanceof Magazine) {
+            Magazine m = (Magazine) doc;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE magazine SET numero=?, periodicite=?, date_publication=? WHERE id=?")) {
+                ps.setInt(1, m.getNumero());
+                ps.setString(2, m.getPeriodicite());
+                ps.setString(3, m.getDatePublication() != null ? m.getDatePublication().format(DATE_FORMAT) : null);
+                ps.setInt(4, m.getIdDocument());
+                ps.executeUpdate();
+            }
+        } else if (doc instanceof DVD) {
+            DVD d = (DVD) doc;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE dvd SET realisateur=?, duree=?, classification=? WHERE id=?")) {
+                ps.setString(1, d.getRealisateur());
+                ps.setInt(2, d.getDuree());
+                ps.setString(3, d.getClassification());
+                ps.setInt(4, d.getIdDocument());
+                ps.executeUpdate();
+            }
+        } else if (doc instanceof EBook) {
+            EBook e = (EBook) doc;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE ebook SET url_acces=?, format=?, drm=? WHERE id=?")) {
+                ps.setString(1, e.getUrlAcces());
+                ps.setString(2, e.getFormat());
+                ps.setInt(3, e.hasDrm() ? 1 : 0);
+                ps.setInt(4, e.getIdDocument());
+                ps.executeUpdate();
+            }
+        } else if (doc instanceof ArticleUniversitaire) {
+            ArticleUniversitaire a = (ArticleUniversitaire) doc;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE article_universitaire SET titre_revue=?, volume=?, numero=?, pages=?, doi=? WHERE id=?")) {
+                ps.setString(1, a.getTitreRevue());
+                ps.setInt(2, a.getVolume());
+                ps.setInt(3, a.getNumero());
+                ps.setString(4, a.getPages());
+                ps.setString(5, a.getDOI());
+                ps.setInt(6, a.getIdDocument());
+                ps.executeUpdate();
+            }
+        } else if (doc instanceof These) {
+            These t = (These) doc;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "UPDATE these SET auteur_principal=?, directeur_recherche=?, universite=?, discipline=?, date_soutenance=?, type_acces=? WHERE id=?")) {
+                ps.setString(1, t.getAuteurPrincipal());
+                ps.setString(2, t.getDirecteurRecherche());
+                ps.setString(3, t.getUniversite());
+                ps.setString(4, t.getDiscipline());
+                ps.setString(5, t.getDateSoutenance() != null ? t.getDateSoutenance().format(DATE_FORMAT) : null);
+                ps.setString(6, t.getTypeAcces());
+                ps.setInt(7, t.getIdDocument());
+                ps.executeUpdate();
+            }
         }
-        // faire pareil pour Magazine, DVD, EBook, ArticleUniversitaire, These
-        // utilise la même logique que insertSpecific
     }
 
     // -------------------- LIST ALL --------------------

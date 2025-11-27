@@ -3,10 +3,11 @@ package com.sgeb.sgbd.model;
 import com.sgeb.sgbd.dao.AdherentDAO;
 import com.sgeb.sgbd.dao.DocumentDAO;
 import com.sgeb.sgbd.dao.EmpruntDAO;
-
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import com.sgeb.sgbd.model.enums.StatutAdherent;
 import com.sgeb.sgbd.model.exception.*;
-
+import com.sgeb.sgbd.util.PasswordUtil;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -80,12 +81,42 @@ public class AdherentManager {
         dao.update(a); // mise à jour dans la base
     }
 
-    public void deleteAdherent(int id)
-            throws SQLException {
+    /**
+     * Met à jour les informations de l'adhérent (nom, prénom) et, si un nouveau
+     * mot de passe haché est fourni, met à jour le mot de passe dans la base.
+     * 
+     * @param a                      L'objet Adherent avec les nouvelles données
+     *                               (nom, prénom, etc.).
+     * @param nouveauMotDePasseHache Le nouveau mot de passe (déjà haché), ou
+     *                               null/vide si inchangé.
+     * @return true si la mise à jour a réussi.
+     * @throws SQLException
+     */
+    public boolean updateAdherentProfil(Adherent a, String motDePasseClair) throws SQLException {
+        if (a == null) {
+            throw new IllegalArgumentException("Adhérent invalide pour mise à jour du profil.");
+        }
 
-        dao.delete(id);
+        try {
+            // 1. Mise à jour des informations de l'Adhérent (nom, prénom, email, etc.)
+            // Assurez-vous que cette méthode de votre DAO ne touche PAS à la colonne
+            // 'password'.
+            dao.update(a);
 
-        // mise à jour dans la base
+            // 2. Mise à jour du mot de passe (si fourni)
+            if (motDePasseClair != null && !motDePasseClair.trim().isEmpty()) {
+                // 🔑 AJOUTEZ OU VÉRIFIEZ LE HACHAGE ICI !
+                String nouveauMotDePasseHache = PasswordUtil.hashPassword(motDePasseClair);
+
+                // Appeler le DAO avec le HASHÉ
+                dao.updatePassword(a.getIdAdherent(), nouveauMotDePasseHache);
+
+            }
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erreur SQL lors de la mise à jour du profil : " + e.getMessage());
+            throw e;
+        }
     }
 
     // -----------------------------
@@ -215,5 +246,13 @@ public class AdherentManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void deleteAdherent(int id)
+            throws SQLException {
+
+        dao.delete(id);
+
+        // mise à jour dans la base
     }
 }

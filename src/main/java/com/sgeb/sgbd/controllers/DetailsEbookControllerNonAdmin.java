@@ -174,8 +174,15 @@ public class DetailsEbookControllerNonAdmin implements Initializable, DetailsCon
         }
     }
 
+    DocumentsControllerNonAdmin documentsControllerNonAdmin;
+
+    public void setParentN(DocumentsControllerNonAdmin d) {
+        documentsControllerNonAdmin = d;
+    }
+
     @FXML
     void emprunter(ActionEvent event) {
+
         // Validation que les objets nécessaires sont présents
         if (empruntManager == null || ebook == null || adherent == null) {
             showAlert("Erreur d'initialisation",
@@ -201,6 +208,7 @@ public class DetailsEbookControllerNonAdmin implements Initializable, DetailsCon
                             + ".",
                     Alert.AlertType.INFORMATION);
 
+            documentsControllerNonAdmin.refreshTable();
             // Fermer la fenêtre de détails après un emprunt réussi
             anuller(null);
 

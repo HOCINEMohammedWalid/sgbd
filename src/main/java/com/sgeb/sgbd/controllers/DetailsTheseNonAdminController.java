@@ -205,6 +205,11 @@ public class DetailsTheseNonAdminController implements Initializable, DetailsCon
     // =============================================
     // ACTIONS UTILISATEUR
     // =============================================
+    DocumentsControllerNonAdmin documentsControllerNonAdmin;
+
+    public void setParentN(DocumentsControllerNonAdmin d) {
+        documentsControllerNonAdmin = d;
+    }
 
     @FXML
     void emprunter(ActionEvent event) {
@@ -231,6 +236,7 @@ public class DetailsTheseNonAdminController implements Initializable, DetailsCon
                     "L'article \"" + these.getTitre() + "\" a été emprunté avec succès par " + adherent.getNom()
                             + ".",
                     Alert.AlertType.INFORMATION);
+            documentsControllerNonAdmin.refreshTable();
 
             // Fermer la fenêtre de détails après un emprunt réussi
             anuller(null);

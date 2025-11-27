@@ -91,4 +91,14 @@ public class PagePrincipaleController implements ManagerLoader {
 
     }
 
+    @FXML
+    private void profil(ActionEvent event) {
+        // 🔑 Charger la nouvelle vue sans injection de managers (pas nécessaire ici)
+        loadPage("/com/sgeb/sgbd/view/admin-change-password-view.fxml", controller -> {
+            AdminPasswordController c = (AdminPasswordController) controller;
+            c.setManagers(documentManager, adherentManager, empruntManager);
+
+        });
+    }
+
 }

@@ -269,7 +269,7 @@
       </HBox>
       <Pane prefHeight="58.0" prefWidth="400.0">
          <children>
-            <Button fx:id="Emprunter" layoutX="90.0" layoutY="12.0" mnemonicParsing="false" onAction="#Emprunter" prefHeight="26.0" prefWidth="95.0" text="Emprunter" />
+            <Button fx:id="Emprunter" layoutX="90.0" layoutY="12.0" mnemonicParsing="false" onAction="#emprunter" prefHeight="26.0" prefWidth="95.0" text="Emprunter" />
             <Button fx:id="Anuller" layoutX="230.0" layoutY="12.0" mnemonicParsing="false" onAction="#anuller" prefHeight="26.0" prefWidth="95.0" text="Anuller" />
          </children>
       </Pane>

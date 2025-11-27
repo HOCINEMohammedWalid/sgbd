@@ -135,7 +135,7 @@ public class DocumentsController implements Initializable {
                         c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getCategorie().toString()));
         langueCol.setCellValueFactory(c -> new javafx.beans.property.SimpleStringProperty(c.getValue().getLangue()));
         DispoCol.setCellValueFactory(
-                c -> new javafx.beans.property.SimpleStringProperty(true ? "Oui" : "Non"));
+                c -> new javafx.beans.property.SimpleStringProperty(c.getValue().isDispo() ? "Oui" : "Non"));
     }
 
     // =============================================
@@ -333,7 +333,7 @@ public class DocumentsController implements Initializable {
             }
 
             // Logique de Disponibilité
-            boolean estDisponible = empruntManager != null && true;
+            boolean estDisponible = doc.isDispo();
             boolean matchesDispo = !dispoKey || estDisponible;
 
             // Retourne le résultat combiné

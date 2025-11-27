@@ -1,6 +1,7 @@
 package com.sgeb.sgbd.controllers;
 
 import com.sgeb.sgbd.model.Adherent;
+import com.sgeb.sgbd.model.Document; // Nécessaire pour les détails du document
 import com.sgeb.sgbd.model.Emprunt;
 import com.sgeb.sgbd.model.EmpruntManager;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -14,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyEvent;
+import javafx.util.Callback; // Nécessaire pour la cellule de bouton
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -30,8 +32,6 @@ public class MesEmpruntsController implements Initializable {
     private FilteredList<Emprunt> filteredData;
 
     // --- Colonnes FXML ---
-    // REMARQUE : Les colonnes d'action (Détails/Paiement, Document) ont été
-    // retirées.
     @FXML
     private TableColumn<Emprunt, String> DocumentCol;
     @FXML
@@ -41,15 +41,21 @@ public class MesEmpruntsController implements Initializable {
     @FXML
     private TableColumn<Emprunt, Long> Penalité;
 
-    // --- Éléments de recherche FXML ---
-    @FXML
-    private CheckBox actualSearch;
+    // Colonnes de date
     @FXML
     private TableColumn<Emprunt, LocalDate> dateEmpruntCol;
     @FXML
     private TableColumn<Emprunt, LocalDate> dateRetourPrevuCol;
     @FXML
-    private TableColumn<Emprunt, LocalDate> dateRetourReel;
+    private TableColumn<Emprunt, Object> dateRetourReel; // Type Object pour gérer Date ou String ("— EN COURS —")
+
+    // NOUVELLE COLONNE DE BOUTON (pour les détails du document)
+    @FXML
+    private TableColumn<Emprunt, Void> DetailDocCol;
+
+    // --- Éléments de recherche FXML ---
+    @FXML
+    private CheckBox actualSearch;
     @FXML
     private TextField date_empruntSearch;
     @FXML
@@ -66,6 +72,7 @@ public class MesEmpruntsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         configurerColonnes();
+        configurerDetailDocumentButton(); // AJOUT DE LA CONFIGURATION DU BOUTON
         Mesemprunts.setItems(empruntData);
     }
 
@@ -87,7 +94,7 @@ public class MesEmpruntsController implements Initializable {
     }
 
     // =============================================
-    // CONFIGURATION DE LA TABLE
+    // CONFIGURATION DE LA TABLE ET DES BOUTONS
     // =============================================
 
     private void configurerColonnes() {
@@ -95,45 +102,74 @@ public class MesEmpruntsController implements Initializable {
         DocumentCol.setCellValueFactory(new PropertyValueFactory<>("DocumentTitre"));
         dateEmpruntCol.setCellValueFactory(new PropertyValueFactory<>("DateEmprunt"));
         dateRetourPrevuCol.setCellValueFactory(new PropertyValueFactory<>("DateRetourPrevue"));
-        dateRetourReel.setCellValueFactory(new PropertyValueFactory<>("DateRetourReelle"));
+
+        // Affichage clair pour la date de retour réelle
+        dateRetourReel.setCellValueFactory(cellData -> {
+            LocalDate dateReelle = cellData.getValue().getDateRetourReelle();
+            if (dateReelle == null) {
+                return new ReadOnlyObjectWrapper<>("— EN COURS —");
+            } else {
+                return new ReadOnlyObjectWrapper<>(dateReelle);
+            }
+        });
 
         // Configuration de la colonne de jours de retard calculée dynamiquement
         Penalité.setCellValueFactory(cellData -> {
             Emprunt emprunt = cellData.getValue();
-            LocalDate datePrevue = emprunt.getDateRetourPrevue();
-            LocalDate dateReelle = emprunt.getDateRetourReelle();
-            long days = 0L;
-
-            if (datePrevue != null) {
-                if (dateReelle == null) {
-                    // Cas 1 : Emprunt en cours et en retard (comparaison avec aujourd'hui)
-                    if (datePrevue.isBefore(LocalDate.now())) {
-                        days = ChronoUnit.DAYS.between(datePrevue, LocalDate.now());
-                    }
-                } else {
-                    // Cas 2 : Emprunt rendu en retard (retard fixe par rapport à la date réelle)
-                    if (dateReelle.isAfter(datePrevue)) {
-                        days = ChronoUnit.DAYS.between(datePrevue, dateReelle);
-                    }
-                }
-            }
-            return new ReadOnlyObjectWrapper<>(Math.max(0, days));
+            long days = calculerJoursRetard(emprunt);
+            return new ReadOnlyObjectWrapper<>(days);
         });
     }
 
-    // La méthode configurerActionColumns est retirée/vidée car aucun bouton n'est
-    // souhaité.
+    /**
+     * Configure la colonne DetailDocCol pour afficher un bouton "Détails Document".
+     */
+    private void configurerDetailDocumentButton() {
+        Callback<TableColumn<Emprunt, Void>, TableCell<Emprunt, Void>> cellFactory = param -> new TableCell<Emprunt, Void>() {
+            private final Button btn = new Button("Détails Document");
+
+            {
+                btn.setOnAction(event -> {
+                    Emprunt emprunt = getTableView().getItems().get(getIndex());
+                    openDocumentDetails(emprunt); // Appel de la méthode d'action
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(btn);
+                }
+            }
+        };
+
+        DetailDocCol.setCellFactory(cellFactory);
+    }
+
+    /**
+     * Ouvre les détails du document associé à l'emprunt.
+     */
+    private void openDocumentDetails(Emprunt emprunt) {
+        // Tente d'utiliser l'objet Document déjà chargé, sinon tente de le charger via
+        // le Manager
+        Document document = emprunt.getDocument();
+
+        showAlert("Détails Document", "Ouverture des détails pour le Document: " + document.toString(),
+                Alert.AlertType.INFORMATION);
+
+    }
 
     // =============================================
-    // GESTION DES DONNÉES ET RAFRAÎCHISSEMENT
+    // LOGIQUE DE DONNÉES ET FILTRAGE
     // =============================================
 
     public void refreshTable() {
         if (empruntManager != null && adherent != null) {
             try {
-                // IMPORTANT : utilise la méthode listerEmpruntsParAdherent
                 empruntData.setAll(empruntManager.listerEmpruntsParAdherent(adherent.getIdAdherent()));
-
                 if (filteredData != null) {
                     applyFilter();
                 }
@@ -145,9 +181,24 @@ public class MesEmpruntsController implements Initializable {
         }
     }
 
-    // =============================================
-    // RECHERCHE ET FILTRAGE
-    // =============================================
+    private long calculerJoursRetard(Emprunt emprunt) {
+        LocalDate datePrevue = emprunt.getDateRetourPrevue();
+        LocalDate dateReelle = emprunt.getDateRetourReelle();
+        long days = 0L;
+
+        if (datePrevue != null) {
+            if (dateReelle == null) {
+                if (datePrevue.isBefore(LocalDate.now())) {
+                    days = ChronoUnit.DAYS.between(datePrevue, LocalDate.now());
+                }
+            } else {
+                if (dateReelle.isAfter(datePrevue)) {
+                    days = ChronoUnit.DAYS.between(datePrevue, dateReelle);
+                }
+            }
+        }
+        return Math.max(0, days);
+    }
 
     private void setupSearchAndFilter() {
         filteredData = new FilteredList<>(empruntData, p -> true);
@@ -180,25 +231,32 @@ public class MesEmpruntsController implements Initializable {
 
         filteredData.setPredicate(emprunt -> {
 
-            // 1. Filtrage par TextFields
+            // 1. Filtrage par TextFields (avec vérification de robustesse)
             boolean matchesId = idKey.isEmpty() || String.valueOf(emprunt.getIdEmprunt()).contains(idKey);
-            boolean matchesTitre = titreKey.isEmpty() || emprunt.getDocumentTitre().toLowerCase().contains(titreKey);
-            boolean matchesDate = dateKey.isEmpty() || emprunt.getDateEmprunt().toString().contains(dateKey);
+
+            boolean matchesTitre = titreKey.isEmpty()
+                    || (emprunt.getDocumentTitre() != null
+                            && emprunt.getDocumentTitre().toLowerCase().contains(titreKey));
+
+            boolean matchesDate = dateKey.isEmpty()
+                    || (emprunt.getDateEmprunt() != null && emprunt.getDateEmprunt().toString().contains(dateKey));
 
             if (!(matchesId && matchesTitre && matchesDate))
                 return false;
 
             // 2. Filtrage par CheckBoxes
             boolean estRendu = emprunt.getDateRetourReelle() != null;
+            long joursRetard = calculerJoursRetard(emprunt);
 
-            // Filtre "Actuel" (équivalent à "En cours")
+            // Filtre "Actuel"
             if (isActual && estRendu) {
                 return false;
             }
 
-            // Filtre "Pénalité" (Afficher ceux qui ont une pénalité non payée)
+            // Filtre "Pénalité" (non payée)
             if (hasPenalite) {
-                if (!(emprunt.getPenalite() > 0 && !emprunt.isPayee())) {
+                // Doit avoir du retard ET ne doit PAS être payée
+                if (!(joursRetard > 0 && !emprunt.isPayee())) {
                     return false;
                 }
             }
@@ -208,12 +266,11 @@ public class MesEmpruntsController implements Initializable {
     }
 
     // =============================================
-    // ACTIONS
+    // UTILITAIRES
     // =============================================
 
     @FXML
     void ajouter(ActionEvent event) {
-        // L'adhérent n'est pas censé "ajouter" un emprunt depuis cette vue.
         showAlert("Fonctionnalité", "L'ajout d'emprunt se fait via la liste des documents.",
                 Alert.AlertType.INFORMATION);
     }

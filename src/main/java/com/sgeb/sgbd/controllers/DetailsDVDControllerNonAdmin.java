@@ -168,6 +168,12 @@ public class DetailsDVDControllerNonAdmin implements Initializable, DetailsContr
         }
     }
 
+    DocumentsControllerNonAdmin documentsControllerNonAdmin;
+
+    public void setParentN(DocumentsControllerNonAdmin d) {
+        documentsControllerNonAdmin = d;
+    }
+
     @FXML
     void emprunter(ActionEvent event) {
         // Validation que les objets nécessaires sont présents
@@ -195,6 +201,7 @@ public class DetailsDVDControllerNonAdmin implements Initializable, DetailsContr
                             + ".",
                     Alert.AlertType.INFORMATION);
 
+            documentsControllerNonAdmin.refreshTable();
             // Fermer la fenêtre de détails après un emprunt réussi
             anuller(null);
 

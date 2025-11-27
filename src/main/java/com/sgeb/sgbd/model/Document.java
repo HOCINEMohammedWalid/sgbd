@@ -20,6 +20,7 @@ public abstract class Document implements Comparable<Document>, Serializable {
     protected List<String> motsCles = new ArrayList<>();
     protected String langue;
     protected TypeDocument typeDocument;
+    protected Boolean dispo;
 
     /*
      * protected Document(int idDocument, String titre) {
@@ -47,6 +48,30 @@ public abstract class Document implements Comparable<Document>, Serializable {
         this.motsCles = motsCles;
         this.langue = langue;
         this.typeDocument = typeDocument;
+        this.dispo = true;
+    }
+
+    protected Document(int idDocument,
+            String titre,
+            List<String> auteurs,
+            int anneePublication,
+            String editeur,
+            String resume,
+            Categorie categorie,
+            List<String> motsCles,
+            String langue,
+            TypeDocument typeDocument, boolean dispo) {
+        this.idDocument = idDocument;
+        this.titre = titre;
+        this.auteurs = auteurs;
+        this.anneePublication = anneePublication;
+        this.editeur = editeur;
+        this.resume = resume;
+        this.categorie = categorie;
+        this.motsCles = motsCles;
+        this.langue = langue;
+        this.typeDocument = typeDocument;
+        this.dispo = dispo;
     }
 
     // Getters
@@ -222,6 +247,14 @@ public abstract class Document implements Comparable<Document>, Serializable {
     // Vérifie si un mot-clé est présent
     public boolean containsMotCle(String motCle) {
         return motsCles.contains(motCle);
+    }
+
+    public boolean isDispo() {
+        return dispo;
+    }
+
+    public boolean setDispo(boolean dispo) {
+        return this.dispo = dispo;
     }
 
     // Méthodes abstraites utiles

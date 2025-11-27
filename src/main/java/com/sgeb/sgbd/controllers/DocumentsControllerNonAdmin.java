@@ -145,7 +145,7 @@ public class DocumentsControllerNonAdmin implements Initializable {
 
         // CORRECTION : Affichage réel de la disponibilité
         DispoCol.setCellValueFactory(c -> {
-            boolean estDispo = empruntManager != null && true;
+            boolean estDispo = c.getValue().isDispo();
             String status = estDispo ? "Oui" : "Non";
             return new javafx.beans.property.SimpleStringProperty(status);
         });
@@ -194,6 +194,7 @@ public class DocumentsControllerNonAdmin implements Initializable {
                         ((DetailsControllerBase) controller).setDocument(document);
                         ((DetailsControllerBase) controller).setEmpruntManager(empruntManager);
                         ((DetailsControllerBase) controller).setAdherent(adherent);
+                        ((DetailsControllerBase) controller).setParentN(DocumentsControllerNonAdmin.this);
                         // IMPORTANT: NE PAS INJECTER documentManager ni setParent()
                         // pour interdire les modifications/suppressions.
                     }
@@ -287,7 +288,7 @@ public class DocumentsControllerNonAdmin implements Initializable {
             }
 
             // CORRECTION : Logique de Disponibilité
-            boolean estDisponible = empruntManager != null && true;
+            boolean estDisponible = doc.isDispo();
             boolean matchesDispo = !dispoKey || estDisponible;
 
             // Retourne le résultat combiné

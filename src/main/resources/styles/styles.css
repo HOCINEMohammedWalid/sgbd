@@ -1,0 +1,147 @@
+/* src/main/resources/styles/styles.css */
+
+/* --- PALETTE & VARIABLES --- */
+.root {
+    -color-primary: #004D40;     /* Deep Teal */
+    -color-secondary: #3E2723;   /* Warm Brown/Text */
+    -color-background: #F8F4E3;  /* Light Cream */
+    -color-highlight: #FFCC80;   /* Soft Gold/Brass */
+    -fx-font-family: "Trebuchet MS", Helvetica, sans-serif;
+    -fx-font-size: 16pt;
+}
+
+/* --- MISE EN PAGE & FOND --- */
+
+.border-pane-root {
+    -fx-background-image: url('../images/library_background.jpg'); 
+    -fx-background-size: cover;
+    -fx-background-color: #333333; 
+}
+
+
+
+/* --- TYPOGRAPHIE --- */
+#welcomeTitle { 
+    -fx-font-size: 30pt; 
+    -fx-font-weight: bold;
+    -fx-text-fill: white; /* Couleur de remplissage du texte */
+    
+    /* AJOUTER CES LIGNES POUR LA BORDURE DU TEXTE */
+    -fx-stroke: -color-secondary; /* Couleur de la bordure du texte (Warm Brown) */
+    -fx-stroke-width: 30px;       /* Épaisseur de la bordure */
+    
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 0, 0); 
+}
+
+.label {
+    -fx-text-fill: -color-background;
+}
+
+/* --- BOUTONS --- */
+.button {
+    -fx-background-color: -color-primary;
+    -fx-text-fill: white;
+    -fx-font-size: 14pt;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8; 
+    -fx-padding: 10 30;
+    
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0.5, 0, 0);
+}
+
+.button:hover {
+    -fx-background-color: -color-highlight; 
+    -fx-text-fill: -color-secondary; 
+}
+
+/* --- CADRE POUR LE GROUPE DE CHAMPS (GridPane) --- */
+.input-group {
+    /* Fond légèrement différent pour le contraste */
+    
+    
+ 
+  
+    -fx-border-width: 1px;
+    -fx-border-radius: 8;
+    
+    /* Ombre pour le relief */
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.5, 0, 0); 
+}
+
+/* Assurer que les labels dans ce groupe héritent bien des styles */
+.input-group .label {
+    -fx-text-fill: -color-background;
+    -fx-font-weight: bold;
+}
+
+.auth-box { 
+   
+    
+    /* AUGMENTER LA LARGEUR MAXIMALE POUR PLUS D'ESPACE */
+    -fx-max-width: 500px; 
+    -fx-min-width: 450px; 
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0.5, 0, 0);
+   
+    -fx-border-width: 1px;
+    -fx-border-radius: 10;
+}
+
+/* styles.css */
+
+/* Style pour les liens cliquables dans les formulaires d'authentification */
+.link-text {
+    /* Couleur typique des liens */
+    -fx-text-fill: -color-background; /* Bleu standard */
+    /* Soulignement */
+    -fx-underline: true;
+
+   
+    /* Petite taille pour le différencier des titres */
+    -fx-font-size: 14px;
+}
+
+/* Changement de couleur au survol (hover) */
+.link-text:hover {
+    -fx-text-fill:-color-background; 
+}
+/* ======================================= */
+/* 1. Style de base pour les champs de saisie */
+/* ======================================= */
+
+.text-field, .password-field {
+    /* Taille et Padding */
+    -fx-font-size: 14px;
+    -fx-padding: 10px 15px; /* Haut/Bas et Gauche/Droite */
+    
+    /* Couleur de fond et Bordure au repos */
+    -fx-background-color:-color-background ; /* Fond blanc */
+    -fx-border-color: #cccccc; /* Gris clair pour la bordure */
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px; /* Coins arrondis */
+    -fx-background-radius: 5px; /* Assure que le fond suit le rayon */
+}
+/* ======================================= */
+/* 2. Style au Focus (quand l'utilisateur clique) */
+/* ======================================= */
+
+.text-field:focused, .password-field:focused {
+    /* Bordure active (par exemple, bleu primaire) */
+    -fx-border-color: #007bff; 
+    
+    /* Ombre subtile pour l'effet de profondeur (optionnel) */
+    -fx-effect: dropshadow(gaussian, rgba(0, 123, 255, 0.3), 5, 0.2, 0, 0); 
+}
+
+#authTitle{
+     -fx-font-size: 20pt; 
+    -fx-font-weight: bold;
+    -fx-text-fill: #F8F4E3; /* Couleur de remplissage du texte */
+    
+    /* AJOUTER CES LIGNES POUR LA BORDURE DU TEXTE */
+    -fx-stroke: -color-secondary; /* Couleur de la bordure du texte (Warm Brown) */
+    -fx-stroke-width: 30px;       /* Épaisseur de la bordure */
+    
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 10, 0.5, 0, 0); 
+
+}

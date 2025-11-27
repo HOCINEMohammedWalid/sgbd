@@ -1,15 +1,12 @@
 package com.sgeb.sgbd;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-
 import com.sgeb.sgbd.controllers.ManagerLoader;
-import com.sgeb.sgbd.controllers.PagePrincipaleController;
 import com.sgeb.sgbd.dao.AdherentDAO;
 import com.sgeb.sgbd.dao.DocumentDAO;
 import com.sgeb.sgbd.dao.EmpruntDAO;
-import com.sgeb.sgbd.model.*;
-import com.sgeb.sgbd.model.enums.StatutAdherent;
+import com.sgeb.sgbd.model.AdherentManager;
+import com.sgeb.sgbd.model.DocumentManager;
+import com.sgeb.sgbd.model.EmpruntManager;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -22,53 +19,64 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        // --- 1. SIMULATION DU CHOIX DE L'UTILISATEUR ---
-        // **C'EST ICI QUE VOUS METTREZ VOTRE VRAIE LOGIQUE DE CONNEXION**
-        boolean isAdmin = false; // Mettez 'true' pour tester l'Admin, 'false' pour le Non-Admin.
+        // 🔑 Bloc try-catch pour détecter l'échec d'instanciation (cause probable des
+        // erreurs null)
+        try {
+            // --- 1. Création des DAO et Managers (Ordre corrigé pour les dépendances) ---
 
-        // --- Création des DAO et Managers (inchangé) ---
-        DocumentDAO documentDAO = new DocumentDAO();
-        AdherentDAO adherentDAO = new AdherentDAO(new EmpruntDAO(), documentDAO);
-        EmpruntDAO empruntDAO = new EmpruntDAO();
+            // Instanciation des DAOs fondamentaux
+            DocumentDAO documentDAO = new DocumentDAO();
+            EmpruntDAO empruntDAO = new EmpruntDAO();
 
-        Adherent adh = new Adherent(1, "Martin", "Lucas", "lucas.martin@mail.com",
-                "12 Rue des Lilas", "0612345678", LocalDate.of(2022, 01, 15),
-                StatutAdherent.ACTIF, new ArrayList<>());
+            // Instanciation du DAO qui dépend des autres
+            // (Vérifiez l'ordre des arguments dans le constructeur de AdherentDAO)
+            AdherentDAO adherentDAO = new AdherentDAO(empruntDAO, documentDAO);
 
-        // adherentDAO.save(adh);
+            // Instanciation des Managers
+            DocumentManager documentManager = new DocumentManager(documentDAO);
+            AdherentManager adherentManager = new AdherentManager(empruntDAO, documentDAO);
+            EmpruntManager empruntManager = new EmpruntManager(empruntDAO, documentDAO, adherentDAO);
 
-        DocumentManager documentManager = new DocumentManager(documentDAO);
-        AdherentManager adherentManager = new AdherentManager(empruntDAO, documentDAO);
-        EmpruntManager empruntManager = new EmpruntManager(empruntDAO, documentDAO, adherentDAO);
+            // --- 2. Vérification de l'état (Optionnel mais recommandé) ---
+            if (documentManager == null || adherentManager == null || empruntManager == null) {
+                // Cette exception sera capturée par le catch final si les objets sont null
+                throw new IllegalStateException("L'un des Managers n'a pas pu être instancié correctement.");
+            }
 
-        // --- 2. Charger la page principale basée sur le rôle ---
-        String fxmlPath;
-        String title;
-        FXMLLoader loader;
-        Parent root;
-        ManagerLoader controller;
-        if (isAdmin) {
-            fxmlPath = "/com/sgeb/sgbd/view/PagePrincipaleAdmin.fxml";
-            title = "Gestion bibliothèque - ADMINISTRATEUR";
-            loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            root = loader.load(); // **CORRECTION ICI :** Utiliser l'interface ManagerLoader
-            controller = (ManagerLoader) loader.getController();
-            controller.setManagers(documentManager, adherentManager, empruntManager);
-        } else {
-            // Assurez-vous que ce fichier FXML existe pour la vue Non-Admin
-            fxmlPath = "/com/sgeb/sgbd/view/PagePrincipaleNonAdmin.fxml";
-            title = "Gestion bibliothèque - ADHÉRENT";
-            loader = new FXMLLoader(getClass().getResource(fxmlPath));
-            root = loader.load(); // **CORRECTION ICI :** Utiliser l'interface ManagerLoader
-            controller = (ManagerLoader) loader.getController();
-            controller.setManagers(documentManager, adherentManager, empruntManager);
-            controller.setAdherent(adh);
+            // --- 3. Charger la PAGE DE CONNEXION (Welcome.fxml) ---
+            String fxmlPath = "/com/sgeb/sgbd/view/Welcome.fxml";
+            String title = "Gestion bibliothèque - Connexion";
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent root = loader.load();
+
+            // 4. Injecter les Managers dans le WelcomeController
+            Object controller = loader.getController();
+
+            if (controller instanceof ManagerLoader) {
+                ManagerLoader managerController = (ManagerLoader) controller;
+                managerController.setManagers(documentManager, adherentManager, empruntManager);
+            } else {
+                System.err.println("ERREUR: Le WelcomeController n'implémente pas ManagerLoader.");
+            }
+
+            // --- 5. Afficher la scène ---
+            Scene scene = new Scene(root, 1175, 600);
+
+            // Assurez-vous que le chemin /styles/styles.css est correct
+            String cssPath = getClass().getResource("/styles/styles.css").toExternalForm();
+            scene.getStylesheets().add(cssPath);
+
+            primaryStage.setScene(scene);
+            primaryStage.setTitle(title);
+            primaryStage.show();
+
+        } catch (Exception e) {
+            System.err.println("--- ERREUR FATALE AU DÉMARRAGE DE L'APPLICATION ---");
+            System.err.println("Cause possible: Problème de connexion BDD ou fichier manquant dans un DAO.");
+            e.printStackTrace();
+            throw e;
         }
-
-        Scene scene = new Scene(root, 1175, 600);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle(title);
-        primaryStage.show();
     }
 
     public static void main(String[] args) {

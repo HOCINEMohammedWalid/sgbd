@@ -211,6 +211,12 @@ public class DetailsArticleUnivControllerNonAdmin implements Initializable, Deta
         }
     }
 
+    DocumentsControllerNonAdmin documentsControllerNonAdmin;
+
+    public void setParentN(DocumentsControllerNonAdmin d) {
+        documentsControllerNonAdmin = d;
+    }
+
     @FXML
     void emprunter(ActionEvent event) {
         // Validation que les objets nécessaires sont présents
@@ -237,7 +243,7 @@ public class DetailsArticleUnivControllerNonAdmin implements Initializable, Deta
                     "L'article \"" + article.getTitre() + "\" a été emprunté avec succès par " + adherent.getNom()
                             + ".",
                     Alert.AlertType.INFORMATION);
-
+            documentsControllerNonAdmin.refreshTable();
             // Fermer la fenêtre de détails après un emprunt réussi
             anuller(null);
 

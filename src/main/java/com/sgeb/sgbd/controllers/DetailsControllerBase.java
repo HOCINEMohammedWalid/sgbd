@@ -26,6 +26,9 @@ public interface DetailsControllerBase {
 
     void setParent(DocumentsController table);
 
+    default void setParentN(DocumentsControllerNonAdmin table) {
+    };
+
     default public void setEmpruntManager(EmpruntManager empruntManager) {
 
     }

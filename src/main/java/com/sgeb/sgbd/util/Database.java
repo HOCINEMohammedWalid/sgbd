@@ -38,7 +38,8 @@ public class Database {
                                                         "adresse TEXT," +
                                                         "telephone TEXT," +
                                                         "date_inscription TEXT NOT NULL," +
-                                                        "statut TEXT NOT NULL" +
+                                                        "statut TEXT NOT NULL ," +
+                                                        "mot_de_passe_hache TEXT" +
                                                         ");");
 
                         // ------------------ Table Document ------------------
@@ -53,7 +54,8 @@ public class Database {
                                                         "resume TEXT," +
                                                         "categorie TEXT," +
                                                         "mots_cles TEXT," +
-                                                        "langue TEXT" +
+                                                        "langue TEXT," +
+                                                        "dispo INTEGER" +
                                                         ");");
 
                         // Sous-tables spécialisées
@@ -124,34 +126,23 @@ public class Database {
                                                         "date_emprunt TEXT NOT NULL," +
                                                         "date_retour_prevue TEXT NOT NULL," +
                                                         "date_retour_reelle TEXT," +
+
                                                         "penalite REAL," +
-                                                        "penalite_payee INTEGER DEFAULT 0," + // <-- Ajout de la colonne
-                                                                                              // pour savoir si payée
+                                                        "penalite_payee INTEGER DEFAULT 0," +
                                                         "FOREIGN KEY(document_id) REFERENCES document(id) ON DELETE CASCADE,"
                                                         +
                                                         "FOREIGN KEY(adherent_id) REFERENCES adherent(id) ON DELETE CASCADE"
                                                         +
                                                         ");");
 
-                        stmt.executeUpdate(
-                                        "CREATE TABLE IF NOT EXISTS penalite (" +
-                                                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                                                        "adherent_id INTEGER NOT NULL," +
-                                                        "montant REAL NOT NULL," +
-                                                        "payee INTEGER NOT NULL," +
-                                                        "motif TEXT," +
-                                                        "FOREIGN KEY(adherent_id) REFERENCES adherent(id) ON DELETE CASCADE"
-                                                        +
-                                                        ");");
-
                         System.out.println("Tables initialisées avec succès !");
 
-                        seedDatabase(); // <==== AJOUT ESSENTIEL
                         conn.commit();
 
                 } catch (SQLException e) {
                         System.err.println("Erreur lors de l'initialisation des tables : " + e.getMessage());
                 }
+
         }
 
         // ====================================================================
@@ -528,6 +519,10 @@ public class Database {
 
         // ====================================================================
         public static void main(String[] args) {
+
+                initialize();
+                seedDatabase();
+                seedAdherents();
 
         }
 }
